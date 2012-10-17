@@ -1,0 +1,10 @@
+production:
+  adapter: mysql2
+  encoding: utf8
+  reconnect: false
+  database: cumplo_production
+  pool: 5
+  username: root
+  password: rK38on0AB4ily7d
+  socket: /var/lib/mysql/mysql.sock
+

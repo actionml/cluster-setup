@@ -1,0 +1,31 @@
+#!/bin/bash
+
+ARG1=$1
+
+case "$ARG1"
+in
+	status)
+		ps aux | grep resque | grep -v grep | tail -2 
+		;;
+	restart)
+		kill $(ps aux | grep resque | grep -v grep | awk '{print $2}' | tail -2)
+		echo "Resque processes terminated"
+		echo "Restarting Resque..."
+		cd /www/public_html/cumplo.cl/
+		sh resque.sh &>> rsq_restart_log.log
+		cd - > /dev/null
+		;;
+	start)
+		cd /www/public_html/cumplo.cl
+		sh resque.sh &>> rsq_start_log.log
+		cd - > /dev/null
+		echo "Restarting Resque..."
+		;;
+	stop)
+		kill $(ps aux | grep resque | grep -v grep | awk '{print $2}' | tail -2)
+                echo "Resque processes terminated"
+		;;
+	*)
+		echo $"Usage: {status|start|stop|restart}"
+            	exit 1
+esac

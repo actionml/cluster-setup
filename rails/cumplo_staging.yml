@@ -1,0 +1,19 @@
+--- 
+environment: staging
+address: 0.0.0.0
+user: root
+group: nginx
+port: 3000
+timeout: 60
+chdir: /www/public_html/staging.cumplo.cl
+log: log/thin.log
+pid: tmp/pids/thin.pid
+rackup: config.ru
+max_conns: 1024
+max_persistent_conns: 512
+require: []
+
+wait: 120
+servers: 2
+daemonize: true
+onebyone: true

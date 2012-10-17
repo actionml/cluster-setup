@@ -1,0 +1,34 @@
+# ZSH
+alias zshconfig="vim ~/.zshrc"
+alias zshaliases="vim ~/.zsh_aliases"
+alias hosts="sudo vim /etc/hosts"
+alias zshsource="source ~/.zshrc;source ~/.zsh_aliases"
+
+# Users
+alias c="clear"
+alias show="mv ~/.secure ~/secure"
+alias hide="mv ~/secure ~/.secure"
+alias mine="cd ~/Dropbox/Personal/Dev/Mine"
+
+# Cumplo Servers
+alias tunnels="ssh -l rojo -f -N -q -L 2222:10.90.5.117:22 front -p 2121; ssh -l rojo -f -N -q -L 2223:10.90.5.118:22 front -p 2121"
+alias front="ssh -p 2121 rojo@front"
+alias back="ssh fagar@localhost -p 2222"
+alias staging="ssh rojo@localhost -p 2223"
+alias zombie="clear;ssh -p 2121 rojo@zombie"
+alias czombie="clear;ssh -p 2121 cumplo@zombie"
+
+# Cumplo CMDS
+alias dev-cumplo="cd ~/Dropbox/Personal/Dev/cumplo/cumplo"
+alias cumplo="cd ~/Dropbox/Personal/Dev/cumplo"
+
+# Git
+alias gchp="git checkout production; git pull origin production"
+alias gchs="git checkout staging; git pull origin staging"
+alias gch="git checkout"
+alias gcam="git commit -am"
+alias gs="git status"
+alias glog="git log --oneline"
+
+# My Servers
+alias server="ssh -p 2223 rojo@elfenars.cl"

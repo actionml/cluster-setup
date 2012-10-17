@@ -10,6 +10,9 @@ alias show="mv ~/.secure ~/secure"
 alias hide="mv ~/secure ~/.secure"
 alias mine="cd ~/Dropbox/Personal/Dev/Mine"
 
+# GAM
+alias gam="python ~/Dropbox/Personal/Dev/Mine/gam/fraternidad/gam.py"
+
 # Cumplo Servers
 alias tunnels="ssh -l rojo -f -N -q -L 2222:10.90.5.117:22 front -p 2121; ssh -l rojo -f -N -q -L 2223:10.90.5.118:22 front -p 2121"
 alias front="ssh -p 2121 rojo@front"

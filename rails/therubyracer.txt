@@ -1,4 +1,0 @@
-gem uninstall libv8
-wget http://rubygems.org/downloads/libv8-3.3.10.4.gem
-ARCHFLAG='-arch i386(x86_64)' gem install ./libv8-3.3.10.4.gem
-ARCHFLAG='-arch i386(x86_64)' gem install therubyracer (-v 0.10.1)

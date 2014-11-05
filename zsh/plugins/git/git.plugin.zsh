@@ -148,6 +148,7 @@ alias push='git push origin $(current_branch)'
 compdef push=git
 alias gpnp='git pull origin $(current_branch) && git push origin $(current_branch)'
 compdef gpnp=git
+alias hpush='git push heroku $(current_branch):master'
 
 # Pretty log messages
 function _git_log_prettily(){

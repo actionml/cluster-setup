@@ -53,6 +53,15 @@ plugins=(git)
 source $ZSH/oh-my-zsh.sh
 source ~/.zsh_aliases
 
+export JAVA_HOME="$(/usr/libexec/java_home)"
+export PIO_HOME="/Users/rojo/Dropbox/Dev/Experiments/PredictionIO-Vagrant"
+
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
 export PATH="$PATH:/usr/local/heroku/bin"
 export PATH="$PATH:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+
+export JAVA_HOME="$(/usr/libexec/java_home)"
+export PATH="$PATH:${JAVA_HOME}/bin"
+
+
+clear

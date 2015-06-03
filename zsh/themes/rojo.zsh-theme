@@ -3,6 +3,14 @@ function git_prompt_info() {
   echo "$(parse_git_dirty)$ZSH_THEME_GIT_PROMPT_PREFIX$(current_branch)$ZSH_THEME_GIT_PROMPT_SUFFIX"
 }
 
+function hg_prompt_info {
+    hg prompt --angle-brackets "\
+<%{$fg_bold[blue]%}hg:(%{$fg_bold[red]%}<branch>><:<tags|, >%{$fg_bold[blue]%})>\
+%{$fg[yellow]%}<status|modified|unknown><update>\
+<patches: <patches|join( → )>>%{$reset_color%}" 2>/dev/null
+}
+
+
 function get_pwd() {
   print -D $PWD
 }
@@ -17,13 +25,6 @@ function battery_charge() {
 }
 
 function put_spacing() {
-  local git=$(git_prompt_info)
-  if [ ${#git} != 0 ]; then
-    ((git=${#git} - 16))
-  else
-    git=0
-  fi
-
   #local bat=$(battery_charge)
   #if [ ${#bat} != 0 ]; then
   #  ((bat = ${#bat} - 18))
@@ -31,8 +32,22 @@ function put_spacing() {
   #  bat=0
   #fi
 
+  local git=$(git_prompt_info)
+  if [ ${#git} != 0 ]; then
+    ((git=${#git} - 16))
+  else
+    git=0
+  fi
+
+  local mercurial=$(hg_prompt_info)
+  if [ ${#mercurial} != 0 ]; then
+    ((mercurial=${#mercurial} - 60))
+  else
+    mercurial=0
+  fi
+
   local termwidth
-  (( termwidth = ${COLUMNS} - 13 - i${#HOST} - ${#$(get_pwd)} - ${git} ))
+  (( termwidth = ${COLUMNS} - 12 - i${#HOST} - ${#$(get_pwd)} - ${git} - ${mercurial} ))
 
   local spacing=""
   for i in {1..$termwidth}; do
@@ -43,7 +58,7 @@ function put_spacing() {
 
 function precmd() {
 print -rP '
-$fg[cyan]%m: $fg[yellow]$(get_pwd)$(put_spacing)$(git_prompt_info)'
+$fg[cyan]%m: $fg[yellow]$(get_pwd)$(put_spacing)$(git_prompt_info)$(hg_prompt_info)'
 }
 
 PROMPT='%{$reset_color%}→ '

@@ -46,7 +46,7 @@ ssh-add
 
 # PLUGINS
 #------------------
-plugins=(git)
+plugins=(git mercurial knife)
 
 # SCRIPTS AND PATH
 #------------------
@@ -62,6 +62,14 @@ export PATH="$PATH:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 
 export JAVA_HOME="$(/usr/libexec/java_home)"
 export PATH="$PATH:${JAVA_HOME}/bin"
+
+export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
+
+# Private Keys
+ssh-add ~/.ssh/tweek
+ssh-add ~/.ssh/tweek.pem
+ssh-add ~/.ssh/tweek-ff.pem
+ssh-add ~/.ssh/elfenars.pem
 
 
 clear

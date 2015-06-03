@@ -31,8 +31,11 @@ alias gcm='git commit -m'
 compdef _git gcm=git-commit
 alias gch='git checkout'
 compdef _git gch=git-checkout
-alias gchm='git checkout master'
-alias gchs='git checkout staging'
+alias gchm='git checkout master; pull'
+alias gchp='git checkout production; pull'
+alias gchqa='git checkout qa; pull'
+alias gchs='git checkout staging; pull'
+alias gchd='git checkout develop; pull'
 alias gr='git remote'
 compdef _git gr=git-remote
 alias grv='git remote -v'
@@ -45,6 +48,8 @@ alias grset='git remote set-url'
 compdef _git grset=git-remote
 alias grup='git remote update'
 compdef _git grset=git-remote
+alias grb='git rebase'
+compdef _git grb=git-rebase
 alias grbi='git rebase -i'
 compdef _git grbi=git-rebase
 alias grbc='git rebase --continue'
@@ -178,3 +183,6 @@ alias gignore='git update-index --assume-unchanged'
 alias gunignore='git update-index --no-assume-unchanged'
 # list temporarily ignored files
 alias gignored='git ls-files -v | grep "^[[:lower:]]"'
+
+# Git related, but not Git CMDS.
+alias rmorig="find . -name '*.orig' -delete"

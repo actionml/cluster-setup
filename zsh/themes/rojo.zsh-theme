@@ -39,15 +39,15 @@ function put_spacing() {
     git=0
   fi
 
-  local mercurial=$(hg_prompt_info)
-  if [ ${#mercurial} != 0 ]; then
-    ((mercurial=${#mercurial} - 60))
-  else
-    mercurial=0
-  fi
+  #local mercurial=$(hg_prompt_info)
+  #if [ ${#mercurial} != 0 ]; then
+  #  ((mercurial=${#mercurial} - 60))
+  #else
+  #  mercurial=0
+  #fi
 
   local termwidth
-  (( termwidth = ${COLUMNS} - 12 - i${#HOST} - ${#$(get_pwd)} - ${git} - ${mercurial} ))
+  (( termwidth = ${COLUMNS} - 12 - i${#HOST} - ${#$(get_pwd)} - ${git}))
 
   local spacing=""
   for i in {1..$termwidth}; do
@@ -58,7 +58,7 @@ function put_spacing() {
 
 function precmd() {
 print -rP '
-$fg[cyan]%m: $fg[yellow]$(get_pwd)$(put_spacing)$(git_prompt_info)$(hg_prompt_info)'
+$fg[cyan]%m: $fg[yellow]$(get_pwd)$(put_spacing)$(git_prompt_info)'
 }
 
 PROMPT='%{$reset_color%}→ '

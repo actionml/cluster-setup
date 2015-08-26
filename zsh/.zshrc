@@ -48,28 +48,29 @@ ssh-add
 #------------------
 plugins=(git mercurial knife)
 
+
 # SCRIPTS AND PATH
 #------------------
+
+## ZSH
 source $ZSH/oh-my-zsh.sh
 source ~/.zsh_aliases
 
-export JAVA_HOME="$(/usr/libexec/java_home)"
-export PIO_HOME="/Users/rojo/Dropbox/Dev/Experiments/PredictionIO-Vagrant"
-
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
-export PATH="$PATH:/usr/local/heroku/bin"
-export PATH="$PATH:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
-
+## Java
 export JAVA_HOME="$(/usr/libexec/java_home)"
 export PATH="$PATH:${JAVA_HOME}/bin"
 
+## RVM & Heroku
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
+export PATH="$PATH:/usr/local/heroku/bin"
+export PATH="$PATH:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
 
-# Private Keys
+# SCRIPTS AND PATH
+#------------------
 ssh-add ~/.ssh/tweek
 ssh-add ~/.ssh/tweek.pem
 ssh-add ~/.ssh/tweek-ff.pem
 ssh-add ~/.ssh/elfenars.pem
-
 
 clear

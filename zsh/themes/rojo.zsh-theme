@@ -47,7 +47,8 @@ function put_spacing() {
   #fi
 
   local termwidth
-  (( termwidth = ${COLUMNS} - 12 - i${#HOST} - ${#$(get_pwd)} - ${git}))
+  (( termwidth = ${COLUMNS} - 27 - i${#HOST} - ${#$(get_pwd)} - ${git}))
+  #(( termwidth = ${COLUMNS} - 10 - i${#HOST} - ${#$(get_pwd)} - ${git}))
 
   local spacing=""
   for i in {1..$termwidth}; do
@@ -58,7 +59,8 @@ function put_spacing() {
 
 function precmd() {
 print -rP '
-$fg[cyan]%m: $fg[yellow]$(get_pwd)$(put_spacing)$(git_prompt_info)'
+$fg[cyan]%m: $fg[yellow]$(get_pwd)$(git-radar --zsh --fetch)'
+#$fg[cyan]%m: $fg[yellow]$(get_pwd)$(put_spacing)$(git)'
 }
 
 PROMPT='%{$reset_color%}→ '

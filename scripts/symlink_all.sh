@@ -8,6 +8,5 @@ rm $ZSH/custom/*
 
 #Link
 ln -s $LOCAL_DIR/dotfiles/zsh/zshrc $HOME/.zshrc
-ln -s $LOCAL_DIR/dotfiles/zsh/plugins $HOME/.oh-my-zsh/custom/plugins
+ln -s $LOCAL_DIR/dotfiles/zsh/plugins/* $HOME/.oh-my-zsh/custom/plugins/
 ln -s $LOCAL_DIR/dotfiles/zsh/themes $HOME/.oh-my-zsh/custom/themes
-# ln -s $LOCAL_DIR/dotfiles/vim/vimrc ~/.vimrc

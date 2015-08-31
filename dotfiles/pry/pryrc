@@ -1,0 +1,9 @@
+begin
+  require 'awesome_print'
+  require 'pry-byebug'
+  require 'pry-doc'
+  require 'pry-stack_explorer'
+  Pry.config.print = proc { |output, value| output.puts value.ai }
+rescue LoadError => err
+  puts "PRY INIT ERROR: #{err}"
+end

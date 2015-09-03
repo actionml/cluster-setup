@@ -187,5 +187,5 @@ alias gignored='git ls-files -v | grep "^[[:lower:]]"'
 # Git related, but not Git CMDS.
 alias rmorig="find . -name '*.orig' -delete"
 
-source ./browser_github.sh
+source $ZSH/custom/plugins/git/browser_github.sh
 alias gh="_open_github"

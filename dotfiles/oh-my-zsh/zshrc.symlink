@@ -51,8 +51,9 @@ source $ZSH/oh-my-zsh.sh
 source ~/.zsh_aliases
 [[ -s ~/.autojump/etc/profile.d/autojump.sh ]] && . ~/.autojump/etc/profile.d/autojump.sh
 
-## Brew
+## Homebrew
 export PATH="/usr/local/sbin:$PATH"
+fpath=("/usr/local/bin/" $fpath) # Add homebrew to the completion path
 
 ## Java
 export JAVA_HOME="$(/usr/libexec/java_home)"

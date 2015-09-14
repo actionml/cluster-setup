@@ -1,0 +1,30 @@
+if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
+  source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
+fi
+
+# SCRIPTS AND PATH
+#------------------
+
+# Autojump
+[[ -s ~/.autojump/etc/profile.d/autojump.sh ]] && . ~/.autojump/etc/profile.d/autojump.sh
+
+# Homebrew
+export PATH="/usr/local/sbin:$PATH"
+fpath=("/usr/local/bin/" $fpath) # Add homebrew to the completion path
+
+# Java
+export JAVA_HOME="$(/usr/libexec/java_home)"
+export PATH="$PATH:${JAVA_HOME}/bin"
+
+# RVM & Heroku
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
+export PATH="$PATH:/usr/local/heroku/bin"
+export PATH="$PATH:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
+
+# EXTRAS
+#------------------
+
+source ~/.zprezto_opts
+source ~/.zprezto_aliases
+source ~/.zprezto_env

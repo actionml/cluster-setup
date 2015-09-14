@@ -1,0 +1,42 @@
+# CONFIG VARS
+#-------------------
+
+# Default Editor
+export EDITOR="subl -n -w"
+
+## ENV Vars
+export EDITOR="vim"
+export SLACK_WEBHOOK_URL="https://hooks.slack.com/services/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"
+export GOOGLE_API_KEY=AIzaSyA96PbJo5_-bluo9jAMFGwjvF_zbFyuAWw
+export SHUTTERSTOCK_KEY=9f1a6928d86c09f0562b
+export SHUTTERSTOCK_SECRET=78ecd8e60359cbf9d9d2b150a17edf04b27c388f
+
+## Hubot
+export HEROKU_URL=tweek-bot.herokuapp.com
+export HUBOT_GIPHY_API_KEY=dc6zaTOxFJmzC
+export HUBOT_GOOGLE_API_KEY=AIzaSyBLHUwlBWtCzMZ2zP_6fmpn79o-tLXK5LI
+export HUBOT_GOOGLE_OAUTH_CLIENT_ID=687805591468-9s6n5okgmifu74mfapkrvpp7uolj46fa.apps.googleusercontent.com
+export HUBOT_GOOGLE_OAUTH_CLIENT_SECRET=IBOTuulPtdropOpEyRjsxIzL
+export HUBOT_GOOGLE_SCOPES=https://www.googleapis.com/auth/calendar
+export HUBOT_GOOGLE_SITE_VERIFICATION=google9fe36df6dac79438
+export HUBOT_GROUP_ALIAS=dev=jeff,tiago,fernando,luiz
+export HUBOT_HEROKU_KEEPALIVE_URL=https://tweek-bot.herokuapp.com/
+export HUBOT_SLACK_TOKEN=xoxb-4791446702-PKYBhvm3eLFvvLX3lqOjK2tC
+export HUBOT_URL=https://tweek-bot.herokuapp.com
+export HUBOT_YOUTUBE_API_KEY=AIzaSyBLHUwlBWtCzMZ2zP_6fmpn79o-tLXK5LI
+export HUBOT_YOUTUBE_DETERMINISTIC_RESULTS=true
+export REDISTOGO_URL=redis://redistogo:8d647e6a614fe192f042759714c2adcf@hammerjaw.redistogo.com:9271/
+
+## Git Radar (https://github.com/michaeldfallen/git-radar)
+export GIT_RADAR_COLOR_BRANCH
+export GIT_RADAR_COLOR_LOCAL_AHEAD
+export GIT_RADAR_COLOR_LOCAL_BEHIND
+export GIT_RADAR_COLOR_LOCAL_DIVERGED
+export GIT_RADAR_COLOR_REMOTE_AHEAD
+export GIT_RADAR_COLOR_REMOTE_BEHIND
+export GIT_RADAR_COLOR_REMOTE_DIVERGED
+export GIT_RADAR_COLOR_REMOTE_NOT_UPSTREAM
+export GIT_RADAR_COLOR_CHANGES_STAGED
+export GIT_RADAR_COLOR_CHANGES_UNSTAGED
+export GIT_RADAR_COLOR_CHANGES_CONFLICTED
+export GIT_RADAR_COLOR_CHANGES_UNTRACKED

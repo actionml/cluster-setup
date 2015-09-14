@@ -15,14 +15,14 @@ function get_pwd() {
   print -D $PWD
 }
 
-function battery_charge() {
-  if [ -e ~/.bin/batcharge.py ]
-  then
-    echo `python ~/.bin/batcharge.py`
-  else
-    echo ''
-  fi
-}
+# function battery_charge() {
+#   if [ -e ~/.bin/batcharge.py ]
+#   then
+#     echo `python ~/.bin/batcharge.py`
+#   else
+#     echo ''
+#   fi
+# }
 
 function put_spacing() {
   #local bat=$(battery_charge)
@@ -32,12 +32,12 @@ function put_spacing() {
   #  bat=0
   #fi
 
-  local git=$(git_prompt_info)
-  if [ ${#git} != 0 ]; then
-    ((git=${#git} - 16))
-  else
-    git=0
-  fi
+  # local git=$(git_prompt_info)
+  # if [ ${#git} != 0 ]; then
+  #   ((git=${#git} - 16))
+  # else
+  #   git=0
+  # fi
 
   #local mercurial=$(hg_prompt_info)
   #if [ ${#mercurial} != 0 ]; then
@@ -46,24 +46,25 @@ function put_spacing() {
   #  mercurial=0
   #fi
 
-  local termwidth
-  (( termwidth = ${COLUMNS} - 27 - i${#HOST} - ${#$(get_pwd)} - ${git}))
-  #(( termwidth = ${COLUMNS} - 10 - i${#HOST} - ${#$(get_pwd)} - ${git}))
+  # local termwidth
+  # (( termwidth = ${COLUMNS} - 27 - i${#HOST} - ${#$(get_pwd)} - ${git}))
+  # #(( termwidth = ${COLUMNS} - 10 - i${#HOST} - ${#$(get_pwd)} - ${git}))
 
-  local spacing=""
-  for i in {1..$termwidth}; do
-    spacing="${spacing} "
-  done
-  echo $spacing
+  # local spacing=""
+  # for i in {1..$termwidth}; do
+  #   spacing="${spacing} "
+  # done
+  # echo $spacing
 }
 
 function precmd() {
 print -rP '
 $fg[cyan]%m: $fg[yellow]$(get_pwd)$(git-radar --zsh --fetch)'
-#$fg[cyan]%m: $fg[yellow]$(get_pwd)$(put_spacing)$(git)'
+#$fg[cyan]%m: $fg[yellow]$(get_pwd)$(put_spacing)$(git)' OLD!
 }
 
-PROMPT='%{$reset_color%}→ '
+export PROMPT='%{$reset_color%}→ '
+# export PROMPT=$'$(git-radar --zsh)'
 
 ZSH_THEME_GIT_PROMPT_PREFIX="[git:"
 ZSH_THEME_GIT_PROMPT_SUFFIX="]$reset_color"

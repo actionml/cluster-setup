@@ -40,7 +40,7 @@ HIST_STAMPS="mm/dd/yyyy"
 
 # PLUGINS
 #------------------
-plugins=(git thefuck rvm sublime extract brew bundle)
+plugins=(git thefuck rvm sublime extract brew bundle osx tmux tmuxinator bundler github)
 
 
 # SCRIPTS AND PATH
@@ -50,6 +50,9 @@ plugins=(git thefuck rvm sublime extract brew bundle)
 source $ZSH/oh-my-zsh.sh
 source ~/.zsh_aliases
 [[ -s ~/.autojump/etc/profile.d/autojump.sh ]] && . ~/.autojump/etc/profile.d/autojump.sh
+
+## Brew
+export PATH="/usr/local/sbin:$PATH"
 
 ## Java
 export JAVA_HOME="$(/usr/libexec/java_home)"

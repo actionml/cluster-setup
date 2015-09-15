@@ -1,0 +1,33 @@
+#
+# Simple prompt theme
+#
+# Authors: Feña Agar <fernando.agars@gmail.com>
+#
+# Screenshots:
+# None
+#
+
+function prompt_rojo_pwd() {
+  echo $(pwd | sed -e "s,^$HOME,~,")
+}
+
+function prompt_rojo_precmd() {
+print -rP "%F{cyan}%m: %F{yellow}$(prompt_rojo_pwd)$(git-radar --zsh --fetch)"
+}
+
+function prompt_rojo_setup {
+  setopt LOCAL_OPTIONS
+  unsetopt XTRACE KSH_ARRAYS
+  prompt_opts=(cr percent subst)
+
+  # Load required functions.
+  autoload -Uz add-zsh-hook
+
+  # Add hook for calling git-info before each command.
+  add-zsh-hook precmd prompt_rojo_precmd
+
+  PROMPT='%F{white}→ '
+  RPROMPT=''
+}
+
+prompt_rojo_setup "$@"

@@ -1,16 +1,37 @@
-# Customs
+# Aliases
 #-------------------
 
 # Commands
 alias c="clear"
+alias l="ls -lcF"
+alias flushdns="sudo killall -HUP mDNSResponder"
+
+# Directories
+export rojo="/Users/rojo/Dev/Rojo"
+export tweek="/Users/rojo/Dev/Tweek"
+export ilv="/Users/rojo/Dev/ILV"
+export devops="cd ~/Dev/DevOps"
+alias rojo-configs="subl $rojo/Github/configs"
+alias rojo-github="cd $rojo/Github"
+alias rojo-forks="cd $rojo/Forks"
+alias rojo-playground="cd $rojo/Playground"
 
 # Files
-alias zshsource="source ~/.zshrc"
+alias zshsource="source ~/.zshrc && source ~/.zpreztorc"
 alias zshaliases="subl ~/.zprezto_aliases"
 alias zshenv="subl ~/.zprezto_env"
 alias zshopts="subl ~/.zprezto_opts"
 alias zshconfig="subl ~/.zshrc"
-alias zpreztoconfig="subl ~/.zpreztorc"
+alias preztoconfig="subl ~/.zpreztorc"
+alias theme="subl /Users/rojo/.zprezto/modules/prompt/functions/prompt_rojo_setup"
+alias sshconfig="subl ~/.ssh/config"
+
+# Rails
+alias rs="rails server"
+alias rc="rails console"
+
+# Binds
+#-------------------
 
 # Binds [Commented for now]
 # # Who doesn't want home and end to work?

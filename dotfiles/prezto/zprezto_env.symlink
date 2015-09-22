@@ -31,7 +31,7 @@ export HUBOT_YOUTUBE_DETERMINISTIC_RESULTS=true
 export REDISTOGO_URL=redis://redistogo:8d647e6a614fe192f042759714c2adcf@hammerjaw.redistogo.com:9271/
 
 ## Git Radar (https://github.com/michaeldfallen/git-radar)
-export GIT_RADAR_COLOR_BRANCH=
+export GIT_RADAR_COLOR_BRANCH="$fg[white]"
 export GIT_RADAR_COLOR_LOCAL_AHEAD
 export GIT_RADAR_COLOR_LOCAL_BEHIND
 export GIT_RADAR_COLOR_LOCAL_DIVERGED

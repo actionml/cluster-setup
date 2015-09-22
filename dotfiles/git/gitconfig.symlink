@@ -17,6 +17,3 @@
   required = true
 [push]
   default = matching
-[diff]
-  guitool = meld
-  external = meld

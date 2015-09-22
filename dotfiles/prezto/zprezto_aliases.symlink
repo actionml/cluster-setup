@@ -3,7 +3,7 @@
 
 # Commands
 alias c="clear"
-alias l="ls -lcF"
+alias l="ls -lacF"
 alias flushdns="sudo killall -HUP mDNSResponder"
 
 # Directories
@@ -21,8 +21,7 @@ alias zshsource="source ~/.zshrc && source ~/.zpreztorc"
 alias zshaliases="subl ~/.zprezto_aliases"
 alias zshenv="subl ~/.zprezto_env"
 alias zshopts="subl ~/.zprezto_opts"
-alias zshconfig="subl ~/.zshrc"
-alias preztoconfig="subl ~/.zpreztorc"
+alias zshconfig="subl ~/.zpreztorc"
 alias theme="subl /Users/rojo/.zprezto/modules/prompt/functions/prompt_rojo_setup"
 alias sshconfig="subl ~/.ssh/config"
 

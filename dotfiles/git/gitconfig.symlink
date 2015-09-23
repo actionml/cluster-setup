@@ -2,7 +2,7 @@
   name = "Feña Agar"
   email = ferliagno@gmail.com
 [core]
-  excludesfile = $HOME/.gitignore_global
+	excludesfile = /Users/tweek/.gitignore_global
   quotepath = false
   editor = vim
 [pull]
@@ -17,3 +17,9 @@
   required = true
 [push]
   default = matching
+[difftool "sourcetree"]
+	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+	path = 
+[mergetool "sourcetree"]
+	cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	trustExitCode = true

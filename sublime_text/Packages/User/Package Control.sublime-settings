@@ -1,0 +1,28 @@
+{
+	"bootstrapped": true,
+	"in_process_packages":
+	[
+	],
+	"installed_packages":
+	[
+		"1337 Color Scheme",
+		"3024 Color Scheme",
+		"AdvancedNewFile",
+		"Alignment",
+		"BracketHighlighter",
+		"ColorPicker",
+		"CTags",
+		"DocBlockr",
+		"Emmet",
+		"Git",
+		"GitGutter",
+		"Github Tools",
+		"Markdown Preview",
+		"Seti_UI",
+		"SideBarEnhancements",
+		"SublimeCodeIntel",
+		"SummitLinter",
+		"Theme - Flatland",
+		"Themr"
+	]
+}

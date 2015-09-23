@@ -61,8 +61,8 @@ alias startredis="launchctl load /usr/local/Cellar/redis/2.8.17/homebrew.mxcl.re
 alias stopredis="launchctl unload /usr/local/Cellar/redis/2.8.17/homebrew.mxcl.redis.plist"
 
 # Postgre
-alias startpostgre="launchctl load /usr/local/Cellar/postgresql/9.3.5_1/homebrew.mxcl.postgresql.plist"
-alias stoppostgre="launchctl unload /usr/local/Cellar/postgresql/9.3.5_1/homebrew.mxcl.postgresql.plist"
+alias startpostgre="launchctl load ~/Library/LaunchAgents/homebrew.mxcl.postgresql.plist"
+alias stoppostgre="launchctl unload ~/Library/LaunchAgents/homebrew.mxcl.postgresql.plist"
 
 # Mongo
 alias startmongo="launchctl load /usr/local/opt/mongodb/homebrew.mxcl.mongodb.plist"

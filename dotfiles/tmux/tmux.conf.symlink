@@ -1,5 +1,4 @@
 # Start new session
-new-session
 
 # Set prefix to Ctrl-Space
 unbind C-b

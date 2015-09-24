@@ -32,6 +32,10 @@ alias rc="rails console"
 # Binds
 #-------------------
 
+bindkey -e
+bindkey '^[[1;9C' forward-word
+bindkey '^[[1;9D' backward-word
+
 # Binds [Commented for now]
 # # Who doesn't want home and end to work?
 # bindkey '\e[1~' beginning-of-line
@@ -57,17 +61,21 @@ alias rc="rails console"
 #-------------------
 
 # Redis
-alias startredis="launchctl load /usr/local/Cellar/redis/2.8.17/homebrew.mxcl.redis.plist"
-alias stopredis="launchctl unload /usr/local/Cellar/redis/2.8.17/homebrew.mxcl.redis.plist"
+export redis_plist="/usr/local/opt/redis/homebrew.mxcl.redis.plist"
+alias startredis="launchctl load $redis_plist"
+alias stopredis="launchctl unload $redis_plist"
 
 # Postgre
-alias startpostgre="launchctl load ~/Library/LaunchAgents/homebrew.mxcl.postgresql.plist"
-alias stoppostgre="launchctl unload ~/Library/LaunchAgents/homebrew.mxcl.postgresql.plist"
+export postgre_plist="/usr/local/opt/postgresql/homebrew.mxcl.postgresql.plist"
+alias startpostgre="launchctl load $postgre_plist"
+alias stoppostgre="launchctl unload $postgre_plist"
 
 # Mongo
-alias startmongo="launchctl load /usr/local/opt/mongodb/homebrew.mxcl.mongodb.plist"
-alias stopmongo="launchctl load /usr/local/opt/mongodb/homebrew.mxcl.mongodb.plist"
+export mongo_plist="/usr/local/opt/mongodb/homebrew.mxcl.mongodb.plist"
+alias startmongo="launchctl load $mongo_plist"
+alias stopmongo="launchctl unload $mongo_plist"
 
 # Elasticsearch
-alias startelastic="launchctl load /usr/local/opt/elasticsearch/homebrew.mxcl.elasticsearch.plist"
-alias stopelastic="launchctl unload /usr/local/opt/elasticsearch/homebrew.mxcl.elasticsearch.plist"
+export elastic_plist="/usr/local/opt/elasticsearch/homebrew.mxcl.elasticsearch.plist"
+alias startelastic="launchctl load $elastic_plist"
+alias stopelastic="launchctl unload $elastic_plist"

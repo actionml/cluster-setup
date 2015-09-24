@@ -1,4 +1,28 @@
 {
+	"Seti_ClosedFolder_dots": false,
+	"Seti_ClosedFolder_remove": false,
+	"Seti_ClosedFolder_same": false,
+	"Seti_SB_bright": true,
+	"Seti_SB_med": true,
+	"Seti_blue_tab_label": false,
+	"Seti_in_4_a_treat": true,
+	"Seti_no_bar_undertabs": false,
+	"Seti_no_blue_bar": false,
+	"Seti_orange_button": true,
+	"Seti_orange_label": true,
+	"Seti_pad_3": true,
+	"Seti_pad_5": false,
+	"Seti_rainbow": true,
+	"Seti_sb_big_padding": false,
+	"Seti_sb_blank": false,
+	"Seti_sb_no_icons": false,
+	"Seti_sb_small_padding": true,
+	"Seti_sb_tree_med": false,
+	"Seti_sb_tree_miny": true,
+	"Seti_sb_tree_small": false,
+	"Seti_sb_tree_tiny": false,
+	"Seti_sb_wild": true,
+	"Seti_tabs_small": true,
 	"always_show_minimap_viewport": false,
 	"auto_complete": true,
 	"auto_complete_commit_on_tab": false,
@@ -16,7 +40,8 @@
 	[
 		".tags",
 		".tags_sorted_by_file",
-		".gemtags"
+		".gemtags",
+		".DS_Store"
 	],
 	"find_selected_text": true,
 	"folder_exclude_patterns":
@@ -61,29 +86,5 @@
 	"trim_trailing_white_space_on_save": true,
 	"word_separators": "./\\()\"'-:,.;<>~!@#$%^&*|+=[]{}`~?_",
 	"word_wrap": false,
-	"wrap_width": 90,
-  "Seti_no_bar_undertabs": false,          // remove the 4px bar under the tabs
-  "Seti_no_blue_bar": false,               // remove the blue bar under the un-saved tabs
-  "Seti_blue_tab_label": false,            // change the un-saved tab label to blue
-  "Seti_orange_label": true,              // change label color to orange
-  "Seti_orange_button": true,              // change blue tab buttons to orange
-  "Seti_tabs_small": true,                // tabs height = 35
-  "Seti_ClosedFolder_same": false,         // same icon as the Opened_folder
-  "Seti_ClosedFolder_remove": false,       // remove closed_folder icon
-  "Seti_ClosedFolder_dots": false,         // change closed_folder icon to dot
-  "Seti_SB_med": true,                    // scrollbars width / height = 6
-  "Seti_SB_bright": true,                 // brighter color for scrollbars
-  "Seti_sb_small_padding": true,          // sidebar entries padding = 3
-  "Seti_sb_big_padding": false,            // sidebar entries padding = 10
-  "Seti_sb_tree_med": false,               // sidebar tree padding = 15
-  "Seti_sb_tree_small": false,             // sidebar tree padding = 10
-  "Seti_sb_tree_tiny": false,              // check (issues/88)
-  "Seti_sb_tree_miny": true,              // check (issues/88)
-  "Seti_sb_no_icons": false,               // check (issues/133)
-  "Seti_sb_blank": false,                  // check (issues/133)
-  "Seti_pad_5": false,                     // use with line_padding_bottom / line_padding_top = 5
-  "Seti_pad_3": true,                     // use with line_padding_bottom / line_padding_top = 3
-  "Seti_sb_wild": true,                   // experiment for sidebar
-  "Seti_rainbow": true,                   // something different
-  "Seti_in_4_a_treat": true,              // something crazy
+	"wrap_width": 90
 }

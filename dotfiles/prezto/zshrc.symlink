@@ -6,7 +6,7 @@ fi
 #------------------
 
 # Autojump
-[[ -s ~/.autojump/etc/profile.d/autojump.sh ]] && . ~/.autojump/etc/profile.d/autojump.sh
+[[ -s $(brew --prefix)/etc/profile.d/autojump.sh ]] && . $(brew --prefix)/etc/profile.d/autojump.sh
 
 # Homebrew
 export PATH="/usr/local/sbin:$PATH"
@@ -28,3 +28,4 @@ export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
 source ~/.zprezto_opts
 source ~/.zprezto_aliases
 source ~/.zprezto_env
+source ~/.bin/tmuxinator.zsh

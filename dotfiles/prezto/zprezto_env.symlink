@@ -5,14 +5,18 @@
 export EDITOR="subl -n -w"
 # export EDITOR="vim"
 
-## ENV Vars
+## Utils
 export SLACK_WEBHOOK_URL="https://hooks.slack.com/services/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"
+export TMDB_API_KEY=52d8face8f256fabb022f84bbece766b
 export GOOGLE_API_KEY=AIzaSyA96PbJo5_-bluo9jAMFGwjvF_zbFyuAWw
 export SHUTTERSTOCK_KEY=9f1a6928d86c09f0562b
 export SHUTTERSTOCK_SECRET=78ecd8e60359cbf9d9d2b150a17edf04b27c388f
 
 ## Android
 export ANDROID_HOME=/usr/local/opt/android-sdk
+
+## Go
+export GOPATH=$HOME/Dropbox/Dev/Rojo/Playground/Go
 
 ## Hubot
 export HEROKU_URL=tweek-bot.herokuapp.com

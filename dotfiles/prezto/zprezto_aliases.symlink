@@ -21,13 +21,15 @@ alias zshsource="source ~/.zshrc && source ~/.zpreztorc"
 alias zshaliases="subl ~/.zprezto_aliases"
 alias zshenv="subl ~/.zprezto_env"
 alias zshopts="subl ~/.zprezto_opts"
-alias zshconfig="subl ~/.zpreztorc"
+alias zshconfig="subl ~/.zshrc"
+alias prezconfig="subl ~/.zpreztorc"
 alias theme="subl /Users/rojo/.zprezto/modules/prompt/functions/prompt_rojo_setup"
 alias sshconfig="subl ~/.ssh/config"
 
-# Rails
+# Ruby/Rails
 alias rs="rails server"
 alias rc="rails console"
+alias be="bundle exec"
 
 # Binds
 #-------------------
@@ -59,6 +61,8 @@ bindkey '^[[1;9D' backward-word
 
 # Service control
 #-------------------
+
+alias stopall="stopredis;stoppostgre;stopelastic;stopmongo"
 
 # Redis
 export redis_plist="/usr/local/opt/redis/homebrew.mxcl.redis.plist"

@@ -11,6 +11,12 @@ set-option -g default-command "reattach-to-user-namespace -l zsh"
 #bind C-c run "tmux show-buffer | reattach-to-user-namespace pbcopy"
 #bind C-v run "reattach-to-user-namespace pbpaste | tmux load-buffer - && tmux paste-buffer"
 
+# Use mouse
+set -g mode-mouse on
+set -g mouse-resize-pane on
+set -g mouse-select-pane on
+set -g mouse-select-window on
+
 # Use vi keys
 set -gw mode-keys vi
 

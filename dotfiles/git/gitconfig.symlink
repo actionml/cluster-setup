@@ -1,10 +1,11 @@
 [user]
-  name = "Feña Agar"
-  email = ferliagno@gmail.com
+	name = Feña Agar
+	email = ferliagno@gmail.com
 [core]
 	excludesfile = /Users/tweek/.gitignore_global
   quotepath = false
   editor = vim
+	autocrlf = true
 [pull]
   rebase = true
 [branch]
@@ -23,3 +24,5 @@
 [mergetool "sourcetree"]
 	cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
 	trustExitCode = true
+[merge]
+	tool = opendiff

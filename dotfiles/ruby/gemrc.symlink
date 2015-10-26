@@ -2,7 +2,6 @@
 :update_sources: true
 :sources:
 - http://rubygems.org
-- http://gems.tweek.tv/
 :benchmark: false
 :backtrace: false
 :verbose: true

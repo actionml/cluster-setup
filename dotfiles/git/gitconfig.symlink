@@ -5,7 +5,7 @@
 	excludesfile = /Users/tweek/.gitignore_global
   quotepath = false
   editor = vim
-	autocrlf = true
+	autocrlf = input
 [pull]
   rebase = true
 [branch]

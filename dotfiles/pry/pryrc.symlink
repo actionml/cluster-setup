@@ -1,11 +1,11 @@
 begin
-  # require 'awesome_print'
-  # require 'pry-byebug'
-  # require 'pry-theme'
-  # require 'pry-toys'
+  require 'awesome_print'
+  require 'pry-byebug'
+  require 'pry-theme'
+  require 'pry-toys'
 
-  # Pry.config.theme = "tomorrow"
-  # Pry.config.print = proc { |output, value| output.puts value.ai }
+  Pry.config.theme = "tomorrow"
+  Pry.config.print = proc { |output, value| output.puts value.ai }
 rescue LoadError => err
   puts "WARNING: #{err}"
 end

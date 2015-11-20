@@ -83,3 +83,12 @@ alias stopmongo="launchctl unload $mongo_plist"
 export elastic_plist="/usr/local/opt/elasticsearch/homebrew.mxcl.elasticsearch.plist"
 alias startelastic="launchctl load $elastic_plist"
 alias stopelastic="launchctl unload $elastic_plist"
+
+# MySQL
+alias startmysql="mysql.server start"
+alias stopmysql="mysql.server stop"
+
+# PHP 56
+export php_plist="/usr/local/opt/php56/homebrew.mxcl.php56.plist"
+alias startphp="launchctl load $php_plist"
+alias stopphp="launchctl unload $php_plist"

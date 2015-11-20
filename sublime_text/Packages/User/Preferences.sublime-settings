@@ -7,6 +7,7 @@
 	"caret_style": "phase",
 	"color_scheme": "Packages/User/SublimeLinter/1337 (SL).tmTheme",
 	"default_encoding": "UTF-8",
+	"default_line_ending": "unix",
 	"detect_indentation": true,
 	"draw_minimap_border": false,
 	"draw_white_space": "none",
@@ -28,12 +29,12 @@
 		".DS_Store",
 		"coverage"
 	],
-	"font_face": "Inconsolata",
+	"font_face": "Hack",
 	"font_options":
 	[
 		"subpixel_antialias"
 	],
-	"font_size": 16,
+	"font_size": 14,
 	"highlight_line": true,
 	"highlight_modified_tabs": true,
 	"ignored_packages":

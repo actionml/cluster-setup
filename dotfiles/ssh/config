@@ -22,8 +22,13 @@ Host gateway
   User openvpnas
   IdentityFile ~/.ssh/tweek.pem
 
-Host demo
+Host tp.demo
   HostName 52.1.107.60
+  User ubuntu
+  IdentityFile ~/.ssh/tweek.pem
+
+Host tp.video
+  HostName 54.210.45.129
   User ubuntu
   IdentityFile ~/.ssh/tweek.pem
 
@@ -38,6 +43,6 @@ Host matcher.api
   IdentityFile ~/.ssh/tweek.pem
 
 Host giantdb
-  HostName 172.30.0.110
+  HostName 52.1.79.80
   User ubuntu
   IdentityFile ~/.ssh/tweek.pem

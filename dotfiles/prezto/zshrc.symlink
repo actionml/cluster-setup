@@ -27,6 +27,10 @@ export PATH="$PATH:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 # Go
 export PATH=$PATH:/usr/local/opt/go/libexec/bin
 
+# LC
+export LC_CTYPE=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
 # EXTRAS
 #------------------
 
@@ -34,6 +38,9 @@ source ~/.zprezto_opts
 source ~/.zprezto_aliases
 source ~/.zprezto_env
 source ~/.bin/tmuxinator.zsh
+
+ssh-add ~/.ssh/id_rsa
+ssh-add ~/.ssh/tweek.pem
 
 # iTerm Shell Integration
 test -e ${HOME}/.iterm2_shell_integration.zsh && source ${HOME}/.iterm2_shell_integration.zsh

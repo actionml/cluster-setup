@@ -1,1 +1,1 @@
-{"sublime_text": ">=3000", "url": "https://github.com/ctf0/Seti_ST3", "platforms": ["*"], "version": "2015.07.14.11.18.50", "description": "Seti_UI Port for ST3.", "dependencies": []}
+{"sublime_text": ">=3000", "version": "2015.11.06.16.14.56", "url": "https://github.com/ctf0/Seti_ST3", "platforms": ["*"], "dependencies": [], "description": "Seti_UI Port for ST3."}

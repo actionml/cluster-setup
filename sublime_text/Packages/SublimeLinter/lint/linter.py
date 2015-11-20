@@ -38,7 +38,6 @@ HTML_ENTITY_RE = re.compile(r'&(?:(?:#(x)?([0-9a-fA-F]{1,4}))|(\w+));')
 
 
 class LinterMeta(type):
-
     """Metaclass for Linter and its subclasses."""
 
     def __init__(cls, name, bases, attrs):
@@ -175,7 +174,6 @@ class LinterMeta(type):
 
 
 class Linter(metaclass=LinterMeta):
-
     """
     The base class for linters.
 
@@ -525,6 +523,7 @@ class Linter(metaclass=LinterMeta):
         ${project}: full path to the project's parent directory, if available.
         ${directory}: full path to the parent directory of the current view's file.
         ${home}: the user's $HOME directory.
+        ${sublime}: sublime text settings directory.
         ${env:x}: the environment variable 'x'.
 
         ${project} and ${directory} expansion are dependent on
@@ -574,6 +573,11 @@ class Linter(metaclass=LinterMeta):
         expressions.append({
             'token': '${home}',
             'value': os.path.expanduser('~').rstrip(os.sep).rstrip(os.altsep) or 'HOME NOT SET'
+        })
+
+        expressions.append({
+            'token': '${sublime}',
+            'value': sublime.packages_path()
         })
 
         expressions.append({

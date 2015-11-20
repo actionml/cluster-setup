@@ -24,13 +24,13 @@ zstyle ':prezto:*:*' color 'yes'
 # The order matters.
 zstyle ':prezto:load' pmodule \
   'environment' \
+  'ssh' \
   'terminal' \
   'editor' \
   'history' \
   'directory' \
   'spectrum' \
   'utility' \
-  'ssh' \
   'completion' \
   'homebrew' \
   'osx' \
@@ -85,7 +85,7 @@ zstyle ':prezto:module:editor' key-bindings 'emacs'
 ## SSH
 
 # Set the SSH identities to load into the agent.
-zstyle ':prezto:module:ssh:load' identities 'id_rsa' 'tweek.pem'
+zstyle ':prezto:module:ssh:load' identities 'id_rsa' 'tweek'
 
 ## Syntax Highlighting
 

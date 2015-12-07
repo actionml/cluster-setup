@@ -30,6 +30,7 @@ alias sshconfig="subl ~/.ssh/config"
 alias rs="rails server"
 alias rc="rails console"
 alias be="bundle exec"
+alias gemconfig="subl ~/.rvm/gemsets/global.gems"
 
 # Binds
 #-------------------

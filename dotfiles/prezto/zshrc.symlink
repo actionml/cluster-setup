@@ -38,6 +38,7 @@ source ~/.zprezto_opts
 source ~/.zprezto_aliases
 source ~/.zprezto_env
 source ~/.bin/tmuxinator.zsh
+source /usr/local/bin/aws_zsh_completer.sh
 
 ssh-add ~/.ssh/id_rsa
 ssh-add ~/.ssh/tweek.pem

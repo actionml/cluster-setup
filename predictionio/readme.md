@@ -14,9 +14,9 @@ _Note: In this guide, all servers share all services, except PredictionIO, which
 _If you wanna distribute PIO, you need to setup a load balancer on top of each Eventserver._
 
 - Hadoop 2.6.2 (Pseudo-distributed mode)
-- Spark 1.5.2
+- Spark 1.5.2 (Pseudo-distributed mode)
 - Elasticsearch 1.7.4 (Clustered)
-- HBase 1.1.2 (Multi node cluster)
+- HBase 1.1.2 (Pseudo-distributed mode)
 - PredictionIO 0.9.6
 - Universal Recommender Template Engine (Provided by ActionML)
 
@@ -134,7 +134,7 @@ _Note: Download everything to a temp folder like `/tmp/downloads`, we will later
 6. Setup clusterized services:
 --
 
-#### 6.1. Setup Hadoop in seudo-distributed mode (a.k.a Multi Node Cluster)
+#### 6.1. Setup Hadoop in pseudo-distributed mode (a.k.a Multi Node Cluster)
 - Read: http://www.tutorialspoint.com/hadoop/hadoop_multi_node_cluster.htm
 - Files config:
   - `etc/hadoop/core-site.xml`

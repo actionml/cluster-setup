@@ -46,3 +46,15 @@ Host giantdb
   HostName 52.1.79.80
   User ubuntu
   IdentityFile ~/.ssh/tweek.pem
+
+Host ur.master
+  HostName 52.23.162.97
+  User pio
+
+Host ur.slave-1
+  HostName 52.91.242.182
+  User pio
+
+Host ur.slave-2
+  HostName 52.23.223.130
+  User pio

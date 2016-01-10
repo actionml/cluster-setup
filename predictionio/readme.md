@@ -1,54 +1,92 @@
+PredictionIO Setup Guide
+--
+
+This is a pretty much self-noted guide to setting up PredictionIO in a cluster of 3 servers (for this guide in particular).
+
+You can also setup more servers and distribute the services mentioned here differently, but for the scope of this guide I won't explain how to do that, although you might use the references here to guide yourself into doing that.
+
+
+0. Requirements:
+--
+
+_Note: In this guide, all servers share all services, except PredictionIO, which runs only under the master server._
+
+_If you wanna distribute PIO, you need to setup a load balancer on top of each Eventserver._
+
+- Hadoop 2.6.2 (Pseudo-distributed mode)
+- Spark 1.5.2
+- Elasticsearch 1.7.4 (Clustered)
+- HBase 1.1.2 (Multi node cluster)
+- PredictionIO 0.9.6
+- Universal Recommender Template Engine (Provided by ActionML)
+
+
 1. Setup User:
 --
 
-- Create user for PredictionIO `pio` in each server
+1.1 Create user for PredictionIO `pio` in each server
 
-    `adduser pio # Give it some password`
+    adduser pio # Give it some password
 
-- Give the `pio` user sudoers permissions
+1.2 Give the `pio` user sudoers permissions
 
-    `usermod -a -G sudo pio`
+    usermod -a -G sudo pio
 
-- Setup paswordless ssh between all servers of the cluster (a.k.a: Add pub key to authorized_keys)
-- Modify `/etc/hosts` file and name each server (i.e: 172.30.0.130 master)
-  - NOTE: Avoid using "localhost" or "127.0.0.1"
+1.3 Setup paswordless ssh between all servers of the cluster (a.k.a: Add pub key to authorized_keys)
+
+1.4 Modify `/etc/hosts` file and name each server
+  - _Note: Avoid using "localhost" or "127.0.0.1"._
+
+    ```bash
+    # Change IPs where it corresponds.
+    10.0.0.1 master
+    10.0.0.2 slave-1
+    10.0.0.3 slave-2
+    ```
+
 
 2. Download services in **all** servers:
 --
-_NOTE: Download everything to a temp folder like `/tmp/downloads`, we will later move them to the final destinations._
+_Note: Download everything to a temp folder like `/tmp/downloads`, we will later move them to the final destinations._
 
-- Download Hadoop 2.6.2 (http://www.eu.apache.org/dist/hadoop/common/hadoop-2.6.2/hadoop-2.6.2.tar.gz)
-- Download Spark 1.5.2 (http://www.us.apache.org/dist/spark/spark-1.5.2/spark-1.5.2-bin-hadoop2.6.tgz)
-- Download Elasticsearch 1.7.4 (https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.7.4.tar.gz)
-  - DON'T USE 2.0 UNTIL PIO WORKS WITH IT. (Pat said there were some issues.)
-- Download HBase 1.1.2 (https://www.apache.org/dist/hbase/1.1.2/hbase-1.1.2-src.tar.gz)
-- Clone PIO Enterprise (TODO)
-- Clone Universal Recommender Template (TODO)
+2.1 Download Hadoop 2.6.2 (http://www.eu.apache.org/dist/hadoop/common/hadoop-2.6.2/hadoop-2.6.2.tar.gz)
+
+2.2 Download Spark 1.5.2 (http://www.us.apache.org/dist/spark/spark-1.5.2/spark-1.5.2-bin-hadoop2.6.tgz)
+
+2.3 Download Elasticsearch 1.7.4 (https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.7.4.tar.gz)
+  - **DON'T USE 2.0 UNTIL PIO WORKS WITH IT. (Pat said there were some issues).**
+
+2.4 Download HBase 1.1.2 (https://www.apache.org/dist/hbase/1.1.2/hbase-1.1.2-src.tar.gz)
+
+2.5 Clone PIO Enterprise (TODO)
+
+2.6 Clone Universal Recommender Template (TODO)
+
 
 3. Setup Java 1.7 or 1.8 (OpenJDK):
 --
 
-- Install Java
+3.1 Install Java.
 
-    `sudo apt-get install openjdk-7-jdk`
+    sudo apt-get install openjdk-7-jdk
 
-- Check which versions of Java are installed and pick one (Ideally OpenJDK, PIO has issues with Oracle Java.)
+3.2 Check which versions of Java are installed and pick one (Ideally OpenJDK, PIO has issues with Oracle Java.)
 
-    `sudo update-alternatives --config java`
+    sudo update-alternatives --config java
 
-- Set JAVA_HOME
+3.3 Set JAVA_HOME env var.
+  - _Note: Don't include the `/bin` folder in the route._
 
     ```bash
     vim /etc/environment
     export JAVA_HOME=/path/to/open/jdk/jre
     ```
 
-  - NOTE: Don't include the `/bin` folder in the route.
 
 4. Create Folders:
 --
 
-- Create folders in `/opt`
+4.1 Create folders in `/opt`
 
     ```bash
     mkdir /opt/hadoop
@@ -64,11 +102,13 @@ _NOTE: Download everything to a temp folder like `/tmp/downloads`, we will later
     chown pio:pio /opt/pio
     ```
 
+
 5. Extract Services:
 --
 
-- Inside the `/tmp/downloads` folder, extract all downloaded services.
-- Move extracted services to their folders
+5.1 Inside the `/tmp/downloads` folder, extract all downloaded services.
+
+5.2 Move extracted services to their folders
 
     ```bash
     sudo mv /tmp/downloads/hadoop-2.6.2 /opt/hadoop/
@@ -78,8 +118,9 @@ _NOTE: Download everything to a temp folder like `/tmp/downloads`, we will later
     sudo mv /tmp/downloads/predictionio /opt/pio/
     ```
 
-- NOTE: Keep version numbers, if we want to upgrade in the future without losing previous versions, we just need to re-symlink.
-- Symlink Folders
+5.3 NOTE: Keep version numbers, if we want to upgrade in the future without losing previous versions, we just need to re-symlink.
+
+5.4 Symlink Folders
 
     ```bash
     sudo ln -s /opt/hadoop/hadoop-2.6.2 /usr/local/hadoop
@@ -278,6 +319,7 @@ NOTES:
     `bin/start-hbase.sh`
 
 - NOTE: I strongly recommend setting all these files just in the master `conf` folder and just copying **the whole** `conf/*` folder to the slaves.
+
 
 7. TODO: Setup PIO
 --

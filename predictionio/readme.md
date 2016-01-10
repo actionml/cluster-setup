@@ -88,19 +88,19 @@ _Note: Download everything to a temp folder like `/tmp/downloads`, we will later
 
 4.1 Create folders in `/opt`
 
-    ```bash
-    mkdir /opt/hadoop
-    mkdir /opt/spark
-    mkdir /opt/elasticsearch
-    mkdir /opt/hbase
-    mkdir /opt/pio
+  ```bash
+  mkdir /opt/hadoop
+  mkdir /opt/spark
+  mkdir /opt/elasticsearch
+  mkdir /opt/hbase
+  mkdir /opt/pio
 
-    chown pio:pio /opt/hadoop
-    chown pio:pio /opt/spark
-    chown pio:pio /opt/elasticsearch
-    chown pio:pio /opt/hbase
-    chown pio:pio /opt/pio
-    ```
+  chown pio:pio /opt/hadoop
+  chown pio:pio /opt/spark
+  chown pio:pio /opt/elasticsearch
+  chown pio:pio /opt/hbase
+  chown pio:pio /opt/pio
+  ```
 
 
 5. Extract Services:
@@ -110,25 +110,25 @@ _Note: Download everything to a temp folder like `/tmp/downloads`, we will later
 
 5.2 Move extracted services to their folders
 
-    ```bash
-    sudo mv /tmp/downloads/hadoop-2.6.2 /opt/hadoop/
-    sudo mv /tmp/downloads/spark-1.5.2 /opt/spark/
-    sudo mv /tmp/downloads/elasticsearch-1.7.4 /opt/elasticsearch/
-    sudo mv /tmp/downloads/hbase-1.1.2 /opt/hbase/
-    sudo mv /tmp/downloads/predictionio /opt/pio/
-    ```
+  ```bash
+  sudo mv /tmp/downloads/hadoop-2.6.2 /opt/hadoop/
+  sudo mv /tmp/downloads/spark-1.5.2 /opt/spark/
+  sudo mv /tmp/downloads/elasticsearch-1.7.4 /opt/elasticsearch/
+  sudo mv /tmp/downloads/hbase-1.1.2 /opt/hbase/
+  sudo mv /tmp/downloads/predictionio /opt/pio/
+  ```
 
 5.3 NOTE: Keep version numbers, if we want to upgrade in the future without losing previous versions, we just need to re-symlink.
 
 5.4 Symlink Folders
 
-    ```bash
-    sudo ln -s /opt/hadoop/hadoop-2.6.2 /usr/local/hadoop
-    sudo ln -s /opt/spark/spark-1.5.2 /usr/local/sparl
-    sudo ln -s /opt/elasticsearch/elasticsearch-1.7.4 /usr/local/elasticsearch
-    sudo ln -s /opt/hbase/hbase-1.1.2 /usr/local/hbase
-    sudo ln -s /opt/pio/predictionio /usr/local/pio
-    ```
+  ```bash
+  sudo ln -s /opt/hadoop/hadoop-2.6.2 /usr/local/hadoop
+  sudo ln -s /opt/spark/spark-1.5.2 /usr/local/sparl
+  sudo ln -s /opt/elasticsearch/elasticsearch-1.7.4 /usr/local/elasticsearch
+  sudo ln -s /opt/hbase/hbase-1.1.2 /usr/local/hbase
+  sudo ln -s /opt/pio/predictionio /usr/local/pio
+  ```
 
 
 6. Setup clusterized services:

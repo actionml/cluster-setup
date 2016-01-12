@@ -22,7 +22,7 @@ _Note: In this guide, all servers share all services, except PredictionIO, which
 _If you want to distribute PIO, you need to setup a load balancer on top of each Eventserver and each PredictionServer (the product of `pio deploy`)_
 
 - Hadoop 2.6.2 (Clustered)
-- Spark 1.5.2 (Clustered)
+- Spark 1.6.0 (Clustered)
 - Elasticsearch 1.7.4 (Clustered, standby master)
 - HBase 1.1.2 (Clustered, standby master)
 - PredictionIO 0.9.6
@@ -58,7 +58,7 @@ _Note: Download everything to a temp folder like `/tmp/downloads`, we will later
 
 2.1 Download [Hadoop 2.6.2](http://www.eu.apache.org/dist/hadoop/common/hadoop-2.6.2/hadoop-2.6.2.tar.gz)
 
-2.2 Download [Spark 1.5.2](http://www.us.apache.org/dist/spark/spark-1.5.2/spark-1.5.2-bin-hadoop2.6.tgz)
+2.2 Download [Spark 1.6.0](http://www.us.apache.org/dist/spark/spark-1.6.0/spark-1.6.0-bin-hadoop2.6.tgz)
 
 2.3 Download [Elasticsearch 1.7.4](https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.7.4.tar.gz) **Note:** Don't use the Elasticsearch 2.x branch until PredictionIO supports it. The change will force and upgrade and pio will not be backwardly compatible with older versions of Elasticsearch.
 
@@ -110,7 +110,7 @@ _Note: Download everything to a temp folder like `/tmp/downloads`, we will later
 5.2 Move extracted services to their folders
 
 	sudo mv /tmp/downloads/hadoop-2.6.2 /opt/hadoop/
-	sudo mv /tmp/downloads/spark-1.5.2 /opt/spark/
+	sudo mv /tmp/downloads/spark-1.6.0 /opt/spark/
 	sudo mv /tmp/downloads/elasticsearch-1.7.4 /opt/elasticsearch/
 	sudo mv /tmp/downloads/hbase-1.1.2 /opt/hbase/
 
@@ -119,7 +119,7 @@ _Note: Download everything to a temp folder like `/tmp/downloads`, we will later
 5.3 Symlink Folders
 
 	sudo ln -s /opt/hadoop/hadoop-2.6.2 /usr/local/hadoop
-	sudo ln -s /opt/spark/spark-1.5.2 /usr/local/sparl
+	sudo ln -s /opt/spark/spark-1.6.0 /usr/local/sparl
 	sudo ln -s /opt/elasticsearch/elasticsearch-1.7.4 /usr/local/elasticsearch
 	sudo ln -s /opt/hbase/hbase-1.1.2 /usr/local/hbase
 	sudo ln -s /home/pio/pio /usr/local/pio

@@ -1,8 +1,8 @@
 #PredictionIO Cluster Setup Guide
 
-This is a guide to setting up PredictionIO and the Universal Recommender in a 3 node cluster. All services are setup with multi-masters in true clustered mode. To make  High Availability complete a secondary master would need to be setup for HDFS. Elasticsearch and HBase are already HA after using this setup howto.
+This is a guide to setting up PredictionIO and the Universal Recommender in a 3 node cluster. All services are setup with multi-masters in true clustered mode. To make  High Availability complete a secondary master would need to be setup for HDFS. Elasticsearch and HBase are already HA after using this guide.
 
-You can also setup more servers and distribute the services mentioned here differently, but for the scope of this guide I won't explain how to do that, although you might use the references here to guide yourself into doing that.
+You can also setup more servers and distribute the services mentioned here differently, but for the scope of this guide I won't explain how to do that, although you might use the references here to guide yourself.
 
 The details of having any single machine reboot and rejoin all clusters is left to the reader and not covered here.
 
@@ -10,27 +10,28 @@ The details of having any single machine reboot and rejoin all clusters is left 
 
 For specific types of load the following rules of thumb apply:
 
-- For **heavy input event load** a separate cluster of HDFS + HBase + EventServer would be desirable. The EvnetServer is used at event input and during train and deploy so optimizing its execution speed can be done by separating it.
-- For **training speed**, make sure the EventServer is fast in all load situations, then make sure Spark is fast. This may mean creating a separate Spark cluster. Different templated use Spark in different ways. For the Universal Recommender it is more important to have memory per executor and even more for the driver, than it is to have more executors. So for the UR you may want to limit executors so you can give each more memory.
-- For **query load**, create more PredictionServers and for the Universal Recommender optimize Elasticsearch. This can be done by having a separate Elasticsearch cluster and the more memory you can give Elasticsearch the better the speed.
+- For **heavy input event load** a separate cluster of HDFS + HBase would be desirable. The EvnetServer is used at all phases, at event input, during train, and is queried in real-time by the deployed PredictionServer/Engine. The EventSever is built on top of HBase so optimizing its execution speed can effect all aspects of performance.
+- For **training speed**, make sure the EventServer is fast, then make sure Spark is fast. This may mean creating a separate Spark cluster. Different templates use Spark in different ways. For the Universal Recommender it is most important to have memory per executor/driver than it is to have more executors. You may even want to limit executors so you can give each more memory. Another way to say this is that CPU load tends to be small so IO is usually the bottleneck. 
+- For **query load**, make sure the EventServer is fast, then create more PredictionServers and for the Universal Recommender optimize Elasticsearch. This can be done by having a separate Elasticsearch cluster and the more memory you can give Elasticsearch the better the speed.
 
+PredictionIO save no state itself but uses clustered services so scaling the services scales PredictionIO. The upshot of this design means that PedictionIO doesn not need to know about other instances of the EventServer of any PredictionServers. They do not cooperate outside of the well documented clustered services it uses. However this means there is no load balancing built into PredictionIO. 
+
+If you were to launch the PIO EventServer or PreditionServer on 10 machines and 2 go down, the rest of the servers will continue to respond as long as the clusters operate. To spread load can be acomplished using a load-balancer. This will account for machines going down and to make sure no server is overloaded.
 
 ##Requirements
 
-_Note: In this guide, all servers share all services, except PredictionIO, which runs only under the master server._
-
-_If you want to distribute PIO, you need to setup a load balancer on top of each Eventserver and each PredictionServer (the product of `pio deploy`)_
+In this guide, all servers share all services, except PredictionIO, which runs only on the master server. Setup of multiple EventServers and PredictionServers is done with load-balancers and is out of the scope of this guide.
 
 - Hadoop 2.6.2 (Clustered)
 - Spark 1.6.0 (Clustered)
 - Elasticsearch 1.7.4 (Clustered, standby master)
-- HBase 1.1.2 (Clustered, standby master)
-- PredictionIO 0.9.6
+- HBase 1.1.2 (Clustered, standby master), due to a bug in 1.1.2 it is advised you move to 1.1.3 as quickly as it is available (as of this writing it is in rc1)
+- PredictionIO 0.9.6 (as of this writing a work in progress so must be built from source)
 - Universal Recommender Template Engine (Provided by ActionML)
-- `Nix server, some commands are specific to Ubuntu, a Debian derivative
+- `Nix server, some instructions below are specific to Ubuntu, a Debian derivative
 
 
-##1. Setup User and SSH on All Hosts:
+##1. Setup User, SSH, and host naming on All Hosts:
 
 1.1 Create user for PredictionIO `pio` in each server
 
@@ -40,10 +41,11 @@ _If you want to distribute PIO, you need to setup a load balancer on top of each
 
     usermod -a -G sudo pio
 
-1.3 Setup passwordless ssh between all hosts of the cluster (a.k.a: Add pub key to authorized_keys) including all hosts to themselves. Setup the known_hosts too so no prompt will be generated when any host tries to connect via ssh to any other host. **Note:** The importance of this cannot be overstated! If ssh does not connect without requireing a password and without asking for confirmation to be added to `known_hosts` **nothing else in the howto will work!** This has been acomplished when all hosts can ssh to all other hosts including themselves without any prompt.
+1.3 Setup passwordless ssh between all hosts of the cluster. This is a combination of adding all public keys to `authorized_keys` and making sure that `known_hosts` includes all cluster hosts, including any host to itself. There must be no prompt generated when any host tries to connect via ssh to any other host. **Note:** The importance of this cannot be overstated! If ssh does not connect without requiring a password and without asking for confirmation **nothing else in the guide will work!** 
 
 1.4 Modify `/etc/hosts` file and name each server
-  - _Note: Avoid using "localhost" or "127.0.0.1"._
+
+  - _Note: Don't use "localhost" or "127.0.0.1"._
 
     ```
     # Use IPs for your hosts.
@@ -52,9 +54,9 @@ _If you want to distribute PIO, you need to setup a load balancer on top of each
     10.0.0.3 some-slave-2
     ```
 
-##2. Download Services on **All** Hosts:
+##2. Download Services on all Hosts:
 
-_Note: Download everything to a temp folder like `/tmp/downloads`, we will later move them to the final destinations._
+Download everything to a temp folder like `/tmp/downloads`, we will later move them to the final destinations.
 
 2.1 Download [Hadoop 2.6.2](http://www.eu.apache.org/dist/hadoop/common/hadoop-2.6.2/hadoop-2.6.2.tar.gz)
 
@@ -67,27 +69,33 @@ _Note: Download everything to a temp folder like `/tmp/downloads`, we will later
 2.5 Clone PIO from its root repo into `~/pio`
 
     git clone https://github.com/actionml/PredictionIO.git pio
+    cd ~/pio
+    git checkout v0.9.6 #get the latest branch
 
 2.6 Clone Universal Recommender Template from its root repo into `~/universal`
 
     git clone https://github.com/actionml/template-scala-parallel-universal-recommendation.git universal
-
+	cd ~/universal
+	git checkout v0.3.0 # or get the latest branch
 
 ##3. Setup Java 1.7 or 1.8
 
-3.1 Install Java JDK, if you prefer Oracle versions, that would be fine.
+3.1 Install Java OpenJDK or Oracle JDK for Java 7 or 8, the JRE version is not sufficient.
 
     sudo apt-get install openjdk-7-jdk
 
-3.2 Check which versions of Java are installed and pick one, 1.7 or greater.
+3.2 Check which versions of Java are installed and pick a 1.7 or greater.
 
     sudo update-alternatives --config java
 
 3.3 Set JAVA_HOME env var.
-  - _Note: Don't include the `/bin` folder in the route._
+
+Don't include the `/bin` folder in the path. This can be problematic so if you get complaints about JAVA_HOME you may need to change xxx-env.sh depending on which service complains. For instance `hbase-env.sh` has a JAVA_HOME setting if HBase complains when starting.
 
     vim /etc/environment
+    # add the following
     export JAVA_HOME=/path/to/open/jdk/jre
+    # some would rather add JAVA_HOME to /home/pio/.bashrc
 
 ##4. Create Folders:
 
@@ -107,7 +115,7 @@ _Note: Download everything to a temp folder like `/tmp/downloads`, we will later
 
 5.1 Inside the `/tmp/downloads` folder, extract all downloaded services.
 
-5.2 Move extracted services to their folders
+5.2 Move extracted services to their folders. This can be done on the master and then copied to all hosts using `scp` as long as all hosts allow passwordless key based ssh and the ownership has been set correctly on all hosts to `pio:pio`
 
 	sudo mv /tmp/downloads/hadoop-2.6.2 /opt/hadoop/
 	sudo mv /tmp/downloads/spark-1.6.0 /opt/spark/
@@ -127,8 +135,11 @@ _Note: Download everything to a temp folder like `/tmp/downloads`, we will later
 ##6. Setup Clustered services
 
 ### 6.1. Setup Hadoop Cluster
-- Read: [this tutorial](http://www.tutorialspoint.com/hadoop/hadoop_multi_node_cluster.htm)
-- Files config:
+
+Read [this tutorial](http://www.tutorialspoint.com/hadoop/hadoop_multi_node_cluster.htm)
+
+- Files config: this  defines the defines where th root of HDFS will be. To write to HDFS you can reference this location, for instance in place of a local path like `file:///home/pio/file` you could read or write `hdfs://some-master:9000/user/pio/file`
+
   - `etc/hadoop/core-site.xml`
 
     ```
@@ -140,7 +151,7 @@ _Note: Download everything to a temp folder like `/tmp/downloads`, we will later
 	</configuration>
 	```
 
-  - `etc/hadoop/hadoop/hdfs-site.xml`
+  - `etc/hadoop/hadoop/hdfs-site.xml` This sets the actual filesystem location that hadoop will use to save data and how many copies of the data to be kept. In case of storage corruption, hadoop will restore from a replica and eventually restore replicas. If a server goes down, all data on that server will be re-created if you have at a `dfs.replication` of least 2. 
 
     ```
 	<configuration>
@@ -158,77 +169,66 @@ _Note: Download everything to a temp folder like `/tmp/downloads`, we will later
 	
 	   <property>
 	      <name>dfs.replication</name>
-	      <value>1</value>
+	      <value>2</value>
 	   </property>
 	</configuration>
     ```
 
-  - `etc/hadoop/mapred-site.xml`
-
-    ```
-    <configuration>
-       <property>
-          <name>mapred.job.tracker</name>
-          <value>some-master:9001</value>
-       </property>
-    </configuration>
-    ```
-
-  - `etc/hadoop/masters`
+  - `etc/hadoop/masters` One master for this config.
 
 	```
-	some-master`
+	some-master
 	```
 
-  - `etc/hadoop/slaves`
+  - `etc/hadoop/slaves` Slaves for HDFS means they have datanodes so the master may also host data with this config
 
     ```
+    some-master
     some-slave-1
     some-slave-2
     ```
 
-  - `etc/hadoop/hadoop-env.sh`
+  - `etc/hadoop/hadoop-env.sh` make sure the following values are set
 
     ```
     export JAVA_HOME=${JAVA_HOME}
+    # this has been set for hadoop historically but not sure it is needed anymore
+    export HADOOP_OPTS=-Djava.net.preferIPv4Stack=true 
     export HADOOP_CONF_DIR=${HADOOP_CONF_DIR:-"/etc/hadoop"}
-    for f in $HADOOP_HOME/contrib/capacity-scheduler/*.jar; do
-      if [ "$HADOOP_CLASSPATH" ]; then
-        export HADOOP_CLASSPATH=$HADOOP_CLASSPATH:$f
-      else
-        export HADOOP_CLASSPATH=$f
-      fi
-    done
-    export HADOOP_OPTS="$HADOOP_OPTS -Djava.net.preferIPv4Stack=true"
-    export HADOOP_NAMENODE_OPTS="-Dhadoop.security.logger=${HADOOP_SECURITY_LOGGER:-INFO,RFAS} -Dhdfs.audit.logger=${HDFS_AUDIT_LOGGER:-INFO,NullAppender} $HADOOP_NAMENODE_OPTS"
-    export HADOOP_DATANODE_OPTS="-Dhadoop.security.logger=ERROR,RFAS $HADOOP_DATANODE_OPTS"
-    export HADOOP_SECONDARYNAMENODE_OPTS="-Dhadoop.security.logger=${HADOOP_SECURITY_LOGGER:-INFO,RFAS} -Dhdfs.audit.logger=${HDFS_AUDIT_LOGGER:-INFO,NullAppender} $HADOOP_SECONDARYNAMENODE_OPTS"
-    export HADOOP_NFS3_OPTS="$HADOOP_NFS3_OPTS"
-    export HADOOP_PORTMAP_OPTS="-Xmx512m $HADOOP_PORTMAP_OPTS"
-    export HADOOP_CLIENT_OPTS="-Xmx512m $HADOOP_CLIENT_OPTS"
-    export HADOOP_SECURE_DN_USER=${HADOOP_SECURE_DN_USER}
-    export HADOOP_SECURE_DN_LOG_DIR=${HADOOP_LOG_DIR}/${HADOOP_HDFS_USER}
-    export HADOOP_PID_DIR=${HADOOP_PID_DIR}
-    export HADOOP_SECURE_DN_PID_DIR=${HADOOP_PID_DIR}
-    export HADOOP_IDENT_STRING=$USER
     ```
 
 - Format Namenode
 
       bin/hadoop namenode -format
+      
+    This will result actions logged to the terminal, make sure there are no errors
 
 - Start dfs servers only. 
 
       sbin/start-dfs.sh
 
-**Note:** do not use `sbin/start-all.sh` because it will needlessly start mapreduce and yarn. These can work together but for the pursposes of this serup they are not needed.
+    Do not use `sbin/start-all.sh` because it will needlessly start mapreduce and yarn. These can work together with PreditionIO but for the pursposes of this guide they are not needed.
 
 - Create `/hbase` and `/zookeper` folders under HDFS
 
       bin/hdfs dfs -mkdir /hbase /zookeeper
 
 #### 6.2. Setup Spark Cluster.
-- Read and follow [this tutorial](http://spark.apache.org/docs/latest/spark-standalone.html)
+- Read and follow [this tutorial](http://spark.apache.org/docs/latest/spark-standalone.html) The primary thing that must be setup is the masters and slaves, which for our purposes will be the same as for hadoop
+-  `conf/masters` One master for this config.
+
+	```
+	some-master
+	```
+
+  - `conf/slaves` Slaves for Spark means they are workers so the master be included
+
+    ```
+    some-master
+    some-slave-1
+    some-slave-2
+    ```
+
 - Start all nodes in the cluster
 
     `sbin/start-all.sh`
@@ -236,24 +236,21 @@ _Note: Download everything to a temp folder like `/tmp/downloads`, we will later
 
 #### 6.3. Setup Elasticsearch Cluster
 
-- Change the `conf/elasticsearch.yml` file to reflect this:
+- Change the `/usr/local/elasticsearch/config/elasticsearch.yml` file as shown below. This is minimal and allows all hosts to act as backup masters in case the acting master goes down. Also all hosts are data/index nodes so can respond to queries and host shards of the index. 
 
-```
-cluster.name: elasticsearch-pio-poc
-node.name: "some-master" # Change to the name of the slave if the server is a slave.
-node.master: true # set to true on masters, others are false
-node.data: true # any node can be a data node
+  ```
+cluster.name: your-app-name
 discovery.zen.ping.multicast.enabled: false # most cloud services don't allow multicast
 discovery.zen.ping.unicast.hosts: ["some-master", "some-slave-1", "some-slave-2"] # add all hosts, masters and/or data nodes
-```
+	```
 
-- copy Elasticsearch and config to all hosts. 
+- copy Elasticsearch and config to all hosts using `scp -r /opt/elasticsearch/... pio@some-host://opt/elasticsearch`. Like HBase, all hosts are identical.
 
 #### 6.4. Setup HBase Cluster (abandon hope all ye who enter here)
 
-This [tutorial](https://hbase.apache.org/book.html#quickstart_fully_distributed) is the **best guide**, many others produce incorrect results . The primary thing to remember is to install and configure on single machine then adding all desired hostnames to `backupmasters`, `regionservers`, and to the `hbase.zookeeper.quorum` config param, then copy **all code and config** to all other machines with something like `scp -r ...` Every machine will then be identical. 
+This [tutorial](https://hbase.apache.org/book.html#quickstart_fully_distributed) is the **best guide**, many others produce incorrect results . The primary thing to remember is to install and configure on a single machine, adding all desired hostnames to `backupmasters`, `regionservers`, and to the `hbase.zookeeper.quorum` config param, then copy **all code and config** to all other machines with something like `scp -r ...` Every machine will then be identical. 
 
-6.4.1 Files config:
+6.4.1 Configure with these changes to `/usr/local/hbase/conf`
   - `conf/hbase-site.xml`
 
         <configuration>
@@ -296,10 +293,6 @@ This [tutorial](https://hbase.apache.org/book.html#quickstart_fully_distributed)
   - `conf/hbase-env.sh`
 
 		export JAVA_HOME=${JAVA_HOME}
-		export HBASE_OPTS="-XX:+UseConcMarkSweepGC"
-		export HBASE_MASTER_OPTS="$HBASE_MASTER_OPTS -XX:PermSize=128m -XX:MaxPermSize=128m"
-		export HBASE_REGIONSERVER_OPTS="$HBASE_REGIONSERVER_OPTS -XX:PermSize=128m -XX:MaxPermSize=128m"
-		export HBASE_PID_DIR=/var/hbase/pids
 		export HBASE_MANAGES_ZK=true
 
 6.4.2 Start HBase
@@ -308,7 +301,7 @@ This [tutorial](https://hbase.apache.org/book.html#quickstart_fully_distributed)
 
 At this point you should see several different processes start on the master and slaves including regionservers and zookeeper servers. If there is an error check the logfiles referenced in the error message. These logfiles may reside on a different host as indicated in the file's name.
 
-**Note:** It is strongly recommend to setup these files in the master `/usr/local/hbase/conf` folder and then copy **all** code and sub-folders or the to the slaves.
+**Note:** It is strongly recommend to setup these files in the master `/usr/local/hbase` folder and then copy **all** code and sub-folders or the to the slaves. All members of the cluster must have the same code and config
 
 
 ##7. Setup PredictionIO
@@ -325,10 +318,66 @@ This will create an artifact for PredictionIO
 
 7.2 Setup Path for PIO commands
 
-Add PIO to the path
+Add PIO to the path by editing your `~/.bashrc` on the master. Here is an example of the important values I have in the file. After changing it remember for execute `source ~/.bashrc` to get the changes into the running shell.
+
+**Note:** Some of these are duplicated in service specific env files
 
 
+    # Java
+	export JAVA_HOME=/usr # this may not work of everyone
+	export PATH=$PATH:/usr/local/pio/bin:/usr/local/hadoop/sbin:/usr/local/hadoop/bin:/usr/local/spark/sbin
+	export JAVA_OPTS="-Xmx8g" # The Universal recommender driver likes memory so I set it here
+	# it could also be passed in to the launcher every time - this is a shorcut
+	
+	# Hadoop 
+	export HADOOP_INSTALL=/usr/local/hadoop
+	export HADOOP_PREFIX=/usr/local/hadoop
+	export HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_INSTALL/lib/native
+	export HADOOP_COMMON_HOME=$HADOOP_INSTALL
+	export HADOOP_CONF_DIR=$HADOOP_INSTALL/etc/hadoop
+	export HADOOP_HDFS_HOME=$HADOOP_INSTALL
+	export YARN_HOME=$HADOOP_INSTALL
+	export HADOOP_MAPRED_HOME=$HADOOP_INSTALL
+	export PATH=$PATH:/usr/local/hadoop/bin:/usr/local/hadoop/sbin
+	
+	# a convenient hadoop alias
+	unalias fs &> /dev/null
+	alias fs="$HADOOP_INSTALL/bin/hdfs dfs"
+	
+	# hbase
+	export HBASE_HOME=/usr/local/hbase
+	export PATH=$HBASE_HOME/bin:$PATH
+	
+	#pio
+	PATH=$PATH:/usr/local/pio
+	
+	#Spark
+	MASTER=spark://pio-poc4:7077
+	export SPARK_HOME=/usr/local/spark
+	
+Run `source ~/.bashrc` to get changes applied. Then you should be able to run
 
+    pio-start-all
+    pio status
+
+The status of all services will be printed but no check is made of the HDFS or Spark services so check them separately by looking at their GUI status pages. They are here:
+
+ - HDFS: http://some-master:50070
+ - Spark: http://some-master:8080
+
+##8. Setup the Universal Recommender
+
+The Universal Recommender is a PredcitionIO Template. Refer to the [UR README.md](https://github.com/actionml/template-scala-parallel-universal-recommendation) for configuration. 
+
+To run the integration test start by getting the source code.
+
+    cd ~
+    git clone https://github.com/actionml/template-scala-parallel-universal-recommendation.git universal
+    cd universal
+    pio app new handmade
+    ./examples/integration-test
+    
+This will take a little time to complete. It will insert app data into the EventServer started with `pio-start-all`, will train a model, and will run several sample queries. It will then print a diff of the actual results with the expected results. It is common to have one line that is different, this is due to JVM differences and it can be safely ignored (as we try to find a way to avoid it).
 
 
 

@@ -1,22 +1,24 @@
 #PredictionIO Cluster Setup Guide
 
-This is a guide to setting up PredictionIO and the Universal Recommender in a 3 node cluster. All services are setup with multi-masters in true clustered mode. To make  High Availability complete a secondary master would need to be setup for HDFS. Elasticsearch and HBase are already HA after using this guide.
+This is a guide to setting up PredictionIO and the Universal Recommender in a 3 node cluster. This is consistent with simpler single machine setups for dev environments or for non-clustered setups, so consult https://docs.prediction.io/install/.
 
-You can also setup more servers and distribute the services mentioned here differently, but for the scope of this guide I won't explain how to do that, although you might use the references here to guide yourself.
+In this guide all services are setup with multiple or standby masters in true clustered mode. To make  High Availability complete a secondary master would need to be setup for HDFS. Elasticsearch and HBase are already HA after using this guide.
 
-The details of having any single machine reboot and rejoin all clusters is left to the reader and not covered here.
+You can also setup more servers and distribute the services mentioned here differently, but for the scope of this guide we won't explain how to do that, although you might use the references here to guide yourself.
+
+The details of having any single machine reboot and rejoin all clusters are left to the reader and not covered here.
 
 ##Load Optimizations Rules
 
 For specific types of load the following rules of thumb apply:
 
-- For **heavy input event load** a separate cluster of HDFS + HBase would be desirable. The EvnetServer is used at all phases, at event input, during train, and is queried in real-time by the deployed PredictionServer/Engine. The EventSever is built on top of HBase so optimizing its execution speed can effect all aspects of performance.
+- For **heavy input event load** a separate cluster of HDFS + HBase would be desirable. The EventServer is used at all phases, at event input, during train, and is queried in real-time by the deployed PredictionServer/Engine. The EventSever is built on top of HBase so optimizing its execution speed can effect all aspects of performance.
 - For **training speed**, make sure the EventServer is fast, then make sure Spark is fast. This may mean creating a separate Spark cluster. Different templates use Spark in different ways. For the Universal Recommender it is most important to have memory per executor/driver than it is to have more executors. You may even want to limit executors so you can give each more memory. Another way to say this is that CPU load tends to be small so IO is usually the bottleneck. 
 - For **query load**, make sure the EventServer is fast, then create more PredictionServers and for the Universal Recommender optimize Elasticsearch. This can be done by having a separate Elasticsearch cluster and the more memory you can give Elasticsearch the better the speed.
 
-PredictionIO save no state itself but uses clustered services so scaling the services scales PredictionIO. The upshot of this design means that PedictionIO doesn not need to know about other instances of the EventServer of any PredictionServers. They do not cooperate outside of the well documented clustered services it uses. However this means there is no load balancing built into PredictionIO. 
+PredictionIO save no state itself but uses clustered services so scaling the services scales PredictionIO. The upshot of this design means that PredictionIO does not need to know about other instances of the EventServer of any PredictionServers. They do not cooperate outside of the well documented clustered services it uses. However this means there is no load balancing built into PredictionIO. 
 
-If you were to launch the PIO EventServer or PreditionServer on 10 machines and 2 go down, the rest of the servers will continue to respond as long as the clusters operate. To spread load can be acomplished using a load-balancer. This will account for machines going down and to make sure no server is overloaded.
+If you were to launch the PIO EventServer or PredictionServer on 10 machines and 2 go down, the rest of the servers will continue to respond as long as the clusters operate. To spread load can be acomplished using a load-balancer. This will account for machines going down and to make sure no server is overloaded.
 
 ##Requirements
 
@@ -127,7 +129,7 @@ Don't include the `/bin` folder in the path. This can be problematic so if you g
 5.3 Symlink Folders
 
 	sudo ln -s /opt/hadoop/hadoop-2.6.2 /usr/local/hadoop
-	sudo ln -s /opt/spark/spark-1.6.0 /usr/local/sparl
+	sudo ln -s /opt/spark/spark-1.6.0 /usr/local/spark
 	sudo ln -s /opt/elasticsearch/elasticsearch-1.7.4 /usr/local/elasticsearch
 	sudo ln -s /opt/hbase/hbase-1.1.2 /usr/local/hbase
 	sudo ln -s /home/pio/pio /usr/local/pio
@@ -138,7 +140,7 @@ Don't include the `/bin` folder in the path. This can be problematic so if you g
 
 Read [this tutorial](http://www.tutorialspoint.com/hadoop/hadoop_multi_node_cluster.htm)
 
-- Files config: this  defines the defines where th root of HDFS will be. To write to HDFS you can reference this location, for instance in place of a local path like `file:///home/pio/file` you could read or write `hdfs://some-master:9000/user/pio/file`
+- Files config: this  defines the defines where the root of HDFS will be. To write to HDFS you can reference this location, for instance in place of a local path like `file:///home/pio/file` you could read or write `hdfs://some-master:9000/user/pio/file`
 
   - `etc/hadoop/core-site.xml`
 
@@ -207,9 +209,9 @@ Read [this tutorial](http://www.tutorialspoint.com/hadoop/hadoop_multi_node_clus
 
       sbin/start-dfs.sh
 
-    Do not use `sbin/start-all.sh` because it will needlessly start mapreduce and yarn. These can work together with PreditionIO but for the pursposes of this guide they are not needed.
+    Do not use `sbin/start-all.sh` because it will needlessly start mapreduce and yarn. These can work together with PredictionIO but for the purposes of this guide they are not needed.
 
-- Create `/hbase` and `/zookeper` folders under HDFS
+- Create `/hbase` and `/zookeeper` folders under HDFS
 
       bin/hdfs dfs -mkdir /hbase /zookeeper
 
@@ -327,7 +329,7 @@ Add PIO to the path by editing your `~/.bashrc` on the master. Here is an exampl
 	export JAVA_HOME=/usr # this may not work of everyone
 	export PATH=$PATH:/usr/local/pio/bin:/usr/local/hadoop/sbin:/usr/local/hadoop/bin:/usr/local/spark/sbin
 	export JAVA_OPTS="-Xmx8g" # The Universal recommender driver likes memory so I set it here
-	# it could also be passed in to the launcher every time - this is a shorcut
+	# it could also be passed in to the launcher every time - this is a shortcut
 	
 	# Hadoop 
 	export HADOOP_INSTALL=/usr/local/hadoop
@@ -355,7 +357,109 @@ Add PIO to the path by editing your `~/.bashrc` on the master. Here is an exampl
 	MASTER=spark://pio-poc4:7077
 	export SPARK_HOME=/usr/local/spark
 	
-Run `source ~/.bashrc` to get changes applied. Then you should be able to run
+Run `source ~/.bashrc` to get changes applied. 
+
+7.3 Setup PredictionIO to connect to the services
+
+You have PredictionIO in `~/pio` so edit ~/pio/conf/pio-env.sh to have these settings:
+	
+	#!/usr/bin/env bash
+	
+	# PredictionIO Main Configuration
+	#
+	# This section controls core behavior of PredictionIO. It is very likely that
+	# you need to change these to fit your site.
+	
+	# SPARK_HOME: Apache Spark is a hard dependency and must be configured.
+	SPARK_HOME=/usr/local/spark
+	
+	#POSTGRES_JDBC_DRIVER=$PIO_HOME/lib/postgresql-9.4-1204.jdbc41.jar
+	#MYSQL_JDBC_DRIVER=$PIO_HOME/lib/mysql-connector-java-5.1.37.jar
+	
+	# ES_CONF_DIR: You must configure this if you have advanced configuration for
+	#              your Elasticsearch setup.
+	# ES_CONF_DIR=/opt/elasticsearch
+	ES_CONF_DIR=/usr/local/elasticsearch
+	
+	# HADOOP_CONF_DIR: You must configure this if you intend to run PredictionIO
+	#                  with Hadoop 2.
+	# HADOOP_CONF_DIR=/opt/hadoop
+	HADOOP_CONF_DIR=/usr/local/hadoop
+	
+	# HBASE_CONF_DIR: You must configure this if you intend to run PredictionIO
+	#                 with HBase on a remote cluster.
+	# HBASE_CONF_DIR=$PIO_HOME/vendors/hbase-1.0.0/conf
+	HBASE_CONF_DIR=/usr/local/hbase/conf
+	
+	# Filesystem paths where PredictionIO uses as block storage.
+	PIO_FS_BASEDIR=$HOME/.pio_store
+	PIO_FS_ENGINESDIR=$PIO_FS_BASEDIR/engines
+	PIO_FS_TMPDIR=$PIO_FS_BASEDIR/tmp
+	
+	# PredictionIO Storage Configuration
+	#
+	# This section controls programs that make use of PredictionIO's built-in
+	# storage facilities. Default values are shown below.
+	#
+	# For more information on storage configuration please refer to
+	# https://docs.prediction.io/system/anotherdatastore/
+	
+	# Storage Repositories
+	
+	# Default is to use PostgreSQL but for clustered scalable setup we'll use
+	# Elasticsearch
+	PIO_STORAGE_REPOSITORIES_METADATA_NAME=pio_meta
+	PIO_STORAGE_REPOSITORIES_METADATA_SOURCE=ELASTICSEARCH
+	
+	PIO_STORAGE_REPOSITORIES_EVENTDATA_NAME=pio_event
+	PIO_STORAGE_REPOSITORIES_EVENTDATA_SOURCE=HBASE
+	
+	PIO_STORAGE_REPOSITORIES_MODELDATA_NAME=pio_model
+	PIO_STORAGE_REPOSITORIES_MODELDATA_SOURCE=LOCALFS
+	
+	# Storage Data Sources, lower level that repos above, just a simple storage API
+	# to use
+	
+	# PostgreSQL Default Settings
+	# Please change "pio" to your database name in PIO_STORAGE_SOURCES_PGSQL_URL
+	# Please change PIO_STORAGE_SOURCES_PGSQL_USERNAME and
+	# PIO_STORAGE_SOURCES_PGSQL_PASSWORD accordingly
+	#PIO_STORAGE_SOURCES_PGSQL_TYPE=jdbc
+	#PIO_STORAGE_SOURCES_PGSQL_URL=jdbc:postgresql://localhost/pio
+	#PIO_STORAGE_SOURCES_PGSQL_USERNAME=pio
+	#PIO_STORAGE_SOURCES_PGSQL_PASSWORD=pio
+	
+	# MySQL Example
+	# PIO_STORAGE_SOURCES_MYSQL_TYPE=jdbc
+	# PIO_STORAGE_SOURCES_MYSQL_URL=jdbc:mysql://localhost/pio
+	# PIO_STORAGE_SOURCES_MYSQL_USERNAME=pio
+	# PIO_STORAGE_SOURCES_MYSQL_PASSWORD=pio
+	
+	# Elasticsearch Example
+	PIO_STORAGE_SOURCES_ELASTICSEARCH_TYPE=elasticsearch
+	PIO_STORAGE_SOURCES_ELASTICSEARCH_CLUSTERNAME=elasticsearch_pio
+	PIO_STORAGE_SOURCES_ELASTICSEARCH_HOSTS=some-master,some-slave-1,some-slave-2
+	PIO_STORAGE_SOURCES_ELASTICSEARCH_PORTS=9300,9300,9300	
+	# to use just all Elasticsearch nodes ^^^ 
+	# to use only the master for Elasticsearch communications vvv
+	#PIO_STORAGE_SOURCES_ELASTICSEARCH_HOSTS=localhost
+	#PIO_STORAGE_SOURCES_ELASTICSEARCH_PORTS=9300
+	PIO_STORAGE_SOURCES_ELASTICSEARCH_HOME=/usr/local/elasticsearch
+	
+	# Local File System Example
+	PIO_STORAGE_SOURCES_LOCALFS_TYPE=localfs
+	PIO_STORAGE_SOURCES_LOCALFS_PATH=$PIO_FS_BASEDIR/models
+	
+	PIO_STORAGE_SOURCES_HBASE_TYPE=hbase
+	PIO_STORAGE_SOURCES_HBASE_HOSTS=some-master,some-slave-1,some-slave-2
+	PIO_STORAGE_SOURCES_HBASE_PORTS=0,0,0
+	# to use just all HBase nodes ^^^ to use only the master for 
+	# HBase communications vvv
+	#PIO_STORAGE_SOURCES_HBASE_HOSTS=some-master
+	#PIO_STORAGE_SOURCES_HBASE_PORTS=0
+	PIO_STORAGE_SOURCES_HBASE_HOME=/usr/local/hbase
+
+Then you should be able to run
 
     pio-start-all
     pio status
@@ -367,7 +471,7 @@ The status of all services will be printed but no check is made of the HDFS or S
 
 ##8. Setup the Universal Recommender
 
-The Universal Recommender is a PredcitionIO Template. Refer to the [UR README.md](https://github.com/actionml/template-scala-parallel-universal-recommendation) for configuration. 
+The Universal Recommender is a PredictionIO Template. Refer to the [UR README.md](https://github.com/actionml/template-scala-parallel-universal-recommendation) for configuration. 
 
 To run the integration test start by getting the source code.
 

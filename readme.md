@@ -2,23 +2,11 @@
 
 This is a guide to setting up PredictionIO and the Universal Recommender in a 3 node cluster. This is consistent with simpler single machine setups for dev environments or for non-clustered setups, so consult https://docs.prediction.io/install/.
 
-In this guide all services are setup with multiple or standby masters in true clustered mode. To make  High Availability complete a secondary master would need to be setup for HDFS. Elasticsearch and HBase are already HA after using this guide.
+In this guide all services are setup with multiple or standby masters in true clustered mode. To make  High Availability complete, a secondary master would need to be setup for HDFS (not described here). Elasticsearch and HBase are setup in High Availabiltiy mode (HA) using this guide.
 
-You can also setup more servers and distribute the services mentioned here differently, but for the scope of this guide we won't explain how to do that, although you might use the references here to guide yourself.
+You can also setup more servers and distribute the services mentioned here differently. See the end of this guide to scale beyond this 3-machine setup.
 
-The details of having any single machine reboot and rejoin all clusters are left to the reader and not covered here.
-
-##Load Optimizations Rules
-
-For specific types of load the following rules of thumb apply:
-
-- For **heavy input event load** a separate cluster of HDFS + HBase would be desirable. The EventServer is used at all phases, at event input, during train, and is queried in real-time by the deployed PredictionServer/Engine. The EventSever is built on top of HBase so optimizing its execution speed can effect all aspects of performance.
-- For **training speed**, make sure the EventServer is fast, then make sure Spark is fast. This may mean creating a separate Spark cluster. Different templates use Spark in different ways. For the Universal Recommender it is most important to have memory per executor/driver than it is to have more executors. You may even want to limit executors so you can give each more memory. Another way to say this is that CPU load tends to be small so IO is usually the bottleneck. 
-- For **query load**, make sure the EventServer is fast, then create more PredictionServers and for the Universal Recommender optimize Elasticsearch. This can be done by having a separate Elasticsearch cluster and the more memory you can give Elasticsearch the better the speed.
-
-PredictionIO save no state itself but uses clustered services so scaling the services scales PredictionIO. The upshot of this design means that PredictionIO does not need to know about other instances of the EventServer of any PredictionServers. They do not cooperate outside of the well documented clustered services it uses. However this means there is no load balancing built into PredictionIO. 
-
-If you were to launch the PIO EventServer or PredictionServer on 10 machines and 2 go down, the rest of the servers will continue to respond as long as the clusters operate. To spread load can be acomplished using a load-balancer. This will account for machines going down and to make sure no server is overloaded.
+Note also that the details of having any single machine reboot and rejoin all clusters are left to the reader and not covered here.
 
 ##Requirements
 
@@ -39,9 +27,10 @@ In this guide, all servers share all services, except PredictionIO, which runs o
 
     adduser pio # Give it some password
 
-1.2 Give the `pio` user sudoers permissions
+1.2 Give the `pio` user sudoers permissions and login to the new user. This setup assumes the pio user as the **owner of all services** including Spark and Hadoop (HDFS).
 
     usermod -a -G sudo pio
+    sudo su pio
 
 1.3 Setup passwordless ssh between all hosts of the cluster. This is a combination of adding all public keys to `authorized_keys` and making sure that `known_hosts` includes all cluster hosts, including any host to itself. There must be no prompt generated when any host tries to connect via ssh to any other host. **Note:** The importance of this cannot be overstated! If ssh does not connect without requiring a password and without asking for confirmation **nothing else in the guide will work!** 
 
@@ -322,41 +311,23 @@ This will create an artifact for PredictionIO
 
 Add PIO to the path by editing your `~/.bashrc` on the master. Here is an example of the important values I have in the file. After changing it remember for execute `source ~/.bashrc` to get the changes into the running shell.
 
-**Note:** Some of these are duplicated in service specific env files
+**Note:** Some of the service setup may ask for you to add other things so the ones below are only for PIO itself and the Universal Recommender.
 
 
     # Java
-	export JAVA_HOME=/usr # this may not work of everyone
-	export PATH=$PATH:/usr/local/pio/bin:/usr/local/hadoop/sbin:/usr/local/hadoop/bin:/usr/local/spark/sbin
-	export JAVA_OPTS="-Xmx8g" # The Universal recommender driver likes memory so I set it here
-	# it could also be passed in to the launcher every time - this is a shortcut
+	export JAVA_OPTS="-Xmx4g" # The Universal recommender driver likes memory so I set it here
+	# You may need to experiment with this setting if you get "out of memory: heap size" 
+	# type error for the driver, executor memory and Spark settings can be set in the 
+	# sparkConf section of engine.json
 	
-	# Hadoop 
-	export HADOOP_INSTALL=/usr/local/hadoop
-	export HADOOP_PREFIX=/usr/local/hadoop
-	export HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_INSTALL/lib/native
-	export HADOOP_COMMON_HOME=$HADOOP_INSTALL
-	export HADOOP_CONF_DIR=$HADOOP_INSTALL/etc/hadoop
-	export HADOOP_HDFS_HOME=$HADOOP_INSTALL
-	export YARN_HOME=$HADOOP_INSTALL
-	export HADOOP_MAPRED_HOME=$HADOOP_INSTALL
-	export PATH=$PATH:/usr/local/hadoop/bin:/usr/local/hadoop/sbin
-	
-	# a convenient hadoop alias
-	unalias fs &> /dev/null
-	alias fs="$HADOOP_INSTALL/bin/hdfs dfs"
-	
-	# hbase
-	export HBASE_HOME=/usr/local/hbase
-	export PATH=$HBASE_HOME/bin:$PATH
-	
-	#pio
-	PATH=$PATH:/usr/local/pio
-	
-	#Spark
-	MASTER=spark://pio-poc4:7077
+	# Spark
+	# this tells PIO which host to use for Spark
+	MASTER=spark://some-master:7077
 	export SPARK_HOME=/usr/local/spark
-	
+
+	# pio
+	export PATH=$PATH:/usr/local/pio/bin:/usr/local/pio
+		
 Run `source ~/.bashrc` to get changes applied. 
 
 7.3 Setup PredictionIO to connect to the services
@@ -483,9 +454,28 @@ To run the integration test start by getting the source code.
     
 This will take a little time to complete. It will insert app data into the EventServer started with `pio-start-all`, will train a model, and will run several sample queries. It will then print a diff of the actual results with the expected results. It is common to have one line that is different, this is due to JVM differences and it can be safely ignored (as we try to find a way to avoid it).
 
+# Scaling
+
+This doc has described setting up pio + the Universal Recommender on 3 machines, where all clustred serivces are run alike on all machines.
+
+For most higher load produciton installations you will need to separate clustered services to avoid contention for resources like cores and memory. This is the case where you will use some machines to run PredicitonIO EventServers and the Universal Recommender PredictionServers. You will also likely want to create a separate Elasticsearch cluster, HBase+HDFS cluster, and a Spark cluster.
+
+Not all of these must be separate, obviously but there are a couple bottleneck that should be noted. 
+
+##Load Optimizations Rules
+
+For specific types of load the following rules of thumb apply:
+
+- **Heavy Input Loads** a separate cluster of HDFS + HBase would be desirable. The EventServer is used at all phases, at event input, during train, and is queried in real-time by the deployed Universal Recommender PredictionServer. The EventSever is built on top of HBase so optimizing its execution speed can effect all aspects of performance.
+- **Training Speed**, make sure the EventServer is fast, then make sure Spark is fast. This may mean creating a separate Spark cluster. Different templates use Spark in different ways. For the Universal Recommender it is most important to have memory per executor/driver than it is to have more executors. You may even want to limit executors so you can give each more memory. Another way to say this is that CPU load tends to be small so IO is usually the bottleneck.
+- **High Query Load**, make sure the EventServer is fast, then create more PredictionServers and for the Universal Recommender optimize Elasticsearch. This can be done by having a separate Elasticsearch cluster and the more memory you can give Elasticsearch the better the speed.
+
+PredictionIO save no state itself (stateless in engineer-speak) but uses clustered services&mdash;simply put, scaling the services scales PredictionIO. This design means that EventServers and PredictionServers are completely independent. They do not cooperate outside of the well documented clustered services in the tech stack. However this independence means there is no load balancing built into PredictionIO. 
+
+If you were to launch the PIO EventServer or PredictionServer on 10 machines and 2 go down, the rest of the servers will continue to respond as long as the clustered services operate. To spread load into the system we use a load-balancer. This will account for machines going down and will make sure no server is overloaded.
 
 
-
+To
 
 
 

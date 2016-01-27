@@ -12,10 +12,10 @@ Note also that the details of having any single machine reboot and rejoin all cl
 
 In this guide, all servers share all services, except PredictionIO, which runs only on the master server. Setup of multiple EventServers and PredictionServers is done with load-balancers and is out of the scope of this guide.
 
-- Hadoop 2.6.2 (Clustered)
+- Hadoop 2.6.3 (Clustered)
 - Spark 1.6.0 (Clustered)
 - Elasticsearch 1.7.4 (Clustered, standby master)
-- HBase 1.1.2 (Clustered, standby master), due to a bug in 1.1.2 it is advised you move to 1.1.3 as quickly as it is available (as of this writing it is in rc1)
+- HBase 1.1.3 (Clustered, standby master)
 - PredictionIO 0.9.6 (as of this writing a work in progress so must be built from source)
 - Universal Recommender Template Engine (Provided by ActionML)
 - `Nix server, some instructions below are specific to Ubuntu, a Debian derivative
@@ -51,13 +51,13 @@ Notice that we are now logged in as the `pio` user
 
 Download everything to a temp folder like `/tmp/downloads`, we will later move them to the final destinations.
 
-2.1 Download [Hadoop 2.6.2](http://www.eu.apache.org/dist/hadoop/common/hadoop-2.6.2/hadoop-2.6.2.tar.gz)
+2.1 Download [Hadoop 2.6.3](http://www.eu.apache.org/dist/hadoop/common/hadoop-2.6.3/hadoop-2.6.3.tar.gz)
 
 2.2 Download [Spark 1.6.0](http://www.us.apache.org/dist/spark/spark-1.6.0/spark-1.6.0-bin-hadoop2.6.tgz)
 
 2.3 Download [Elasticsearch 1.7.4](https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.7.4.tar.gz) **Note:** Don't use the Elasticsearch 2.x branch until PredictionIO supports it. The change will force and upgrade and pio will not be backwardly compatible with older versions of Elasticsearch.
 
-2.4 Download HBase 1.1.2 (https://www.apache.org/dist/hbase/1.1.2/hbase-1.1.2-src.tar.gz) **Note:** due to a bug in pre 1.1.3 Hbase upgrade this asap to hbase 1.1.3
+2.4 Download HBase 1.1.3 (https://www.apache.org/dist/hbase/1.1.3/hbase-1.1.3-src.tar.gz)
 
 2.5 Clone PIO from its root repo into `~/pio`
 
@@ -110,19 +110,19 @@ Don't include the `/bin` folder in the path. This can be problematic so if you g
 
 5.2 Move extracted services to their folders. This can be done on the master and then copied to all hosts using `scp` as long as all hosts allow passwordless key based ssh and the ownership has been set correctly on all hosts to `pio:pio`
 
-	sudo mv /tmp/downloads/hadoop-2.6.2 /opt/hadoop/
+	sudo mv /tmp/downloads/hadoop-2.6.3 /opt/hadoop/
 	sudo mv /tmp/downloads/spark-1.6.0 /opt/spark/
 	sudo mv /tmp/downloads/elasticsearch-1.7.4 /opt/elasticsearch/
-	sudo mv /tmp/downloads/hbase-1.1.2 /opt/hbase/
+	sudo mv /tmp/downloads/hbase-1.1.3 /opt/hbase/
 
 **Note:** Keep version numbers, if you upgrade or downgrade in the future just create new symlinks.
 
 5.3 Symlink Folders
 
-	sudo ln -s /opt/hadoop/hadoop-2.6.2 /usr/local/hadoop
+	sudo ln -s /opt/hadoop/hadoop-2.6.3 /usr/local/hadoop
 	sudo ln -s /opt/spark/spark-1.6.0 /usr/local/spark
 	sudo ln -s /opt/elasticsearch/elasticsearch-1.7.4 /usr/local/elasticsearch
-	sudo ln -s /opt/hbase/hbase-1.1.2 /usr/local/hbase
+	sudo ln -s /opt/hbase/hbase-1.1.3 /usr/local/hbase
 	sudo ln -s /home/pio/pio /usr/local/pio
 
 ##6. Setup Clustered services

@@ -477,7 +477,7 @@ PredictionIO save no state itself (stateless in engineer-speak) but uses cluster
 If you were to launch the PIO EventServer or PredictionServer on 10 machines and 2 go down, the rest of the servers will continue to respond as long as the clustered services operate. To spread load into the system we use a load-balancer. This will account for machines going down and will make sure no server is overloaded.
 
 
-To
+![image](http://)
 
 
 

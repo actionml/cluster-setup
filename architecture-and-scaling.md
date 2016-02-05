@@ -1,23 +1,25 @@
 # Architecture and Scaling
 
-This doc has described setting up pio + the Universal Recommender on 3 machines, where all clustered services are run alike on all machines.
-
 For most higher load production installations you will need to separate clustered services to avoid contention for resources like cores and memory. This is the case where you will use some machines to run PredictonIO EventServers and the Universal Recommender PredictionServers. You will also likely want to create a separate Elasticsearch cluster, HBase+HDFS cluster, and a Spark cluster.
 
-Not all of these must be separate, obviously but there are a couple bottleneck that should be noted. 
+Not all of these must be separate, obviously, but there are a couple bottleneck that should be noted. 
 
-##Load Optimizations Rules
+##Load Optimizations Rules&mdash;For The Impatient
 
 For specific types of load the following rules of thumb apply:
 
-- **Heavy Input Loads** a separate cluster of HDFS + HBase would be desirable. The EventServer is used at all phases, at event input, during train, and is queried in real-time by the deployed Universal Recommender PredictionServer. The EventSever is built on top of HBase so optimizing its execution speed can effect all aspects of performance.
-- **Training Speed**, make sure the EventServer is fast, then make sure Spark is fast. This may mean creating a separate Spark cluster. Different templates use Spark in different ways. For the Universal Recommender it is most important to have memory per executor/driver than it is to have more executors. You may even want to limit executors so you can give each more memory. Another way to say this is that CPU load tends to be small so IO is usually the bottleneck.
+- **Heavy Input Loads** a separate cluster of HDFS + HBase would be desirable. The EventServer is used at all phases, at event input, during train, and is queried in real-time by the deployed Universal Recommender PredictionServer. The EventSever is built on top of HBase so optimizing its execution speed can affect all aspects of performance.
+- **Training Speed**, make sure the EventServer is fast, then make sure Spark is fast and has plenty of memory per "worker" node. This may mean creating a separate Spark cluster or using something like Amazon's EMR during training. For the Universal Recommender it is **very** important to have enough memory per node. The minimum for medium sized data is 8G for driver and executor. 
 - **High Query Load**, make sure the EventServer is fast, then create more PredictionServers and for the Universal Recommender optimize Elasticsearch. This can be done by having a separate Elasticsearch cluster and the more memory you can give Elasticsearch the better the speed.
 - **Scaling Services Separately** For very high demand applications or suites of applications we would make all clustered services scale independently. This means creating separate HBase, HDFS, Elasticsearch, and Spark clusters. Amazon and Rackspace have elastic HBase+HDFS+Spark clusters that can be dynamically expanded or collapsed. Unfortunately the version of Hbase on AWS EMR is ancient (0.94.x) which is not supported by PredictionIO so feel free to call Amazon and remind them that time has moved on and they are left behind :-) In any case there are some people who can afford internal Cloudera, Horton, of MapR clusters with a newer compatible stack of services. We will describe how to setup PredictionServers and EventServers separate of the other clustered services.
 
-First note that PredictionIO saves no state itself (it is "stateless" in engineer-speak) but uses clustered services&mdash;simply put, scaling the services scales PredictionIO. This design means that EventServers and PredictionServers are completely independent. They do not cooperate outside of the well documented clustered services in the tech stack. However this independence means there is no load balancing built into PredictionIO. 
+First note that PredictionIO saves no state itself (it is "stateless" in engineer-speak) but uses clustered services&mdash;simply put, scaling the services scales PredictionIO. This design means that EventServers and PredictionServers are completely independent. They do not cooperate outside of the well documented clustered services in the tech stack. However this independence means there is no cluster-wide load balancing built into PredictionIO. 
 
-If you were to launch the PIO EventServer or PredictionServer on 10 machines and 2 go down, the rest of the servers will continue to respond as long as the clustered services operate. To spread load into the system we use a load-balancer. This will account for machines going down and will make sure no server is overloaded.
+##The Role of Load Balancers
+
+For any use of PredictionIO and the Universal Recommender you will need a security layer and may also need load balancing. Neither is provided by PredictionIO. This means that you will be communicating with PIO from Application Servers or through Proxies or Load Balancers.
+
+The many functions of load balancers and proxies are not presented here but any connection to the outside world should be secured at very least.
 
 ##Logical Architecture and Data Flow
 

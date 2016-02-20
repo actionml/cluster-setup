@@ -387,9 +387,6 @@ You have PredictionIO in `~/pio` so edit ~/pio/conf/pio-env.sh to have these set
 	PIO_STORAGE_REPOSITORIES_EVENTDATA_NAME=pio_event
 	PIO_STORAGE_REPOSITORIES_EVENTDATA_SOURCE=HBASE
 	
-	PIO_STORAGE_REPOSITORIES_MODELDATA_NAME=pio_model
-	PIO_STORAGE_REPOSITORIES_MODELDATA_SOURCE=LOCALFS
-	
 	# Storage Data Sources, lower level that repos above, just a simple storage API
 	# to use
 	
@@ -410,34 +407,36 @@ You have PredictionIO in `~/pio` so edit ~/pio/conf/pio-env.sh to have these set
 	
 	# Elasticsearch Example
 	PIO_STORAGE_SOURCES_ELASTICSEARCH_TYPE=elasticsearch
-	PIO_STORAGE_SOURCES_ELASTICSEARCH_CLUSTERNAME=elasticsearch_pio
+	PIO_STORAGE_SOURCES_ELASTICSEARCH_HOME=/usr/local/elasticsearch
+	# The next line is optional and should match the ES cluster.name in ES config
+	#PIO_STORAGE_SOURCES_ELASTICSEARCH_CLUSTERNAME=some-cluster
+	
+	# For clustered Elasticsearch
 	PIO_STORAGE_SOURCES_ELASTICSEARCH_HOSTS=some-master,some-slave-1,some-slave-2
 	PIO_STORAGE_SOURCES_ELASTICSEARCH_PORTS=9300,9300,9300	
-	# to use just all Elasticsearch nodes ^^^ 
-	# to use only the master for Elasticsearch communications vvv
+	
+	# to use only localhost for Elasticsearch communications vvv
 	#PIO_STORAGE_SOURCES_ELASTICSEARCH_HOSTS=localhost
 	#PIO_STORAGE_SOURCES_ELASTICSEARCH_PORTS=9300
-	PIO_STORAGE_SOURCES_ELASTICSEARCH_HOME=/usr/local/elasticsearch
 	
-	# Local File System Example
-	PIO_STORAGE_SOURCES_LOCALFS_TYPE=localfs
-	PIO_STORAGE_SOURCES_LOCALFS_PATH=$PIO_FS_BASEDIR/models
-	
+	# HBase Source config
 	PIO_STORAGE_SOURCES_HBASE_TYPE=hbase
-	PIO_STORAGE_SOURCES_HBASE_HOSTS=some-master,some-slave-1,some-slave-2
-	PIO_STORAGE_SOURCES_HBASE_PORTS=0,0,0
-	# to use just all HBase nodes ^^^ to use only the master for 
-	# HBase communications vvv
+	PIO_STORAGE_SOURCES_HBASE_HOME=/usr/local/hbase
+	
+	# HBase localhost config
 	#PIO_STORAGE_SOURCES_HBASE_HOSTS=some-master
 	#PIO_STORAGE_SOURCES_HBASE_PORTS=0
-	PIO_STORAGE_SOURCES_HBASE_HOME=/usr/local/hbase
 
+	# Hbase clustered config
+	PIO_STORAGE_SOURCES_HBASE_HOSTS=some-master,some-slave-1,some-slave-2
+	PIO_STORAGE_SOURCES_HBASE_PORTS=0,0,0
+	
 Then you should be able to run
 
     pio-start-all
     pio status
 
-The status of all services will be printed but no check is made of the HDFS or Spark services so check them separately by looking at their GUI status pages. They are here:
+The status of all the stores is checked and will be printed but no check is made of the HDFS or Spark services so check them separately by looking at their GUI status pages. They are here:
 
  - HDFS: http://some-master:50070
  - Spark: http://some-master:8080

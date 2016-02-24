@@ -386,6 +386,10 @@ You have PredictionIO in `~/pio` so edit ~/pio/conf/pio-env.sh to have these set
 	
 	PIO_STORAGE_REPOSITORIES_EVENTDATA_NAME=pio_event
 	PIO_STORAGE_REPOSITORIES_EVENTDATA_SOURCE=HBASE
+ 
+        #Need to use HDFS here instead of LOCALFS to enable deploying to machines without the local model
+        PIO_STORAGE_REPOSITORIES_MODELDATA_NAME=pio_model
+        PIO_STORAGE_REPOSITORIES_MODELDATA_SOURCE=HDFS
 	
 	# Storage Data Sources, lower level that repos above, just a simple storage API
 	# to use
@@ -418,6 +422,10 @@ You have PredictionIO in `~/pio` so edit ~/pio/conf/pio-env.sh to have these set
 	# to use only localhost for Elasticsearch communications vvv
 	#PIO_STORAGE_SOURCES_ELASTICSEARCH_HOSTS=localhost
 	#PIO_STORAGE_SOURCES_ELASTICSEARCH_PORTS=9300
+
+        PIO_STORAGE_SOURCES_HDFS_TYPE=hdfs
+        PIO_STORAGE_SOURCES_HDFS_PATH=/models
+
 	
 	# HBase Source config
 	PIO_STORAGE_SOURCES_HBASE_TYPE=hbase

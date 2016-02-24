@@ -424,7 +424,7 @@ You have PredictionIO in `~/pio` so edit ~/pio/conf/pio-env.sh to have these set
 	#PIO_STORAGE_SOURCES_ELASTICSEARCH_PORTS=9300
 
         PIO_STORAGE_SOURCES_HDFS_TYPE=hdfs
-        PIO_STORAGE_SOURCES_HDFS_PATH=/models
+        PIO_STORAGE_SOURCES_HDFS_PATH=hdfs://some-master:9000/models
 
 	
 	# HBase Source config

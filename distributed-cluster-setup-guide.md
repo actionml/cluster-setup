@@ -4,7 +4,19 @@
 
 One of the first things needed to scale to indefinite dataset size is a distributed Spark cluster of the type supported by Amazon AWS-EMR. Or even a home-grown cluster using one of the big distros like Cloudera, MapR, or Horton Works. This requires the cluster to be setup and running with a master. 
 
-###Standalone Spark (No Yarn)
+###Spark cluster (No Yarn)
+
+In order to run UR and pio with remote spark cluster some conditions should be fulfiled:
+
+0. All machines should know host names of each other is machine names are used in configurations
+
+1. pio machine should be visible to spark workers and should have spark driver ports accessible (see [Spark security page](http://spark.apache.org/docs/latest/security.html#configuring-ports-for-network-security) for details), so `spark.driver.port`, `spark.fileserver.port`, `spark.broadcast.port`, `spark.replClassServer.port` and `spark.blockManager.port` should be accessible. All these ports may be fixed and specified in `$SPARK_HOME/conf/spark-defaults.conf` (all spark machines and driver)
+
+2. remote spark workers should also be able to access HBase (see [Hbase service ports](https://docs.hortonworks.com/HDPDocuments/HDP2/HDP-2.3.2/bk_HDP_Reference_Guide/content/hbase-ports.html)) and in some cases Elastic Search (9200, 9300)
+
+3. HDFS (if training data are in hdfs) should be also available to workers  
+
+4. in addition correct Elasticsearch nodes should be specified in `engine.json`
 
 A "driver" process runs on the machine where SparkSubmit is used or the `pio train` process is launched. This driver needs to know the remote "master" on one of several ways, the command line is the most obvious and takes precedence over other config. To specify the master issue the `pio train` command with the following form 
 
@@ -12,4 +24,15 @@ A "driver" process runs on the machine where SparkSubmit is used or the `pio tra
 
 Notice the use of the `spark://` protocol identifier. Further each job will need to know how to connect to the "driver" machine. The easiest way to do this is using the `engine.json` `sparkConf` params. You will also need to connect from Spark execitors to Elasticsearch using both the TransportClient and the REST API. The driver, and Elasticsearch REST connection can be specified in the same place like this:
 
-    Alexey, can you fill this in for Elasticsearch and driver?
+```
+"sparkConf": {
+    ...
+    "es.nodes": "<es-node-1>,<es-node-2>,<es-node-3>",
+    "spark.driver.host": "<pio-machine-address>"
+
+  },
+```
+
+
+
+

@@ -46,8 +46,6 @@ Notice the use of the `spark://` protocol identifier. <del>Further each job will
 "sparkConf": {
     ...
     "es.nodes": "es.node1.company.com,es.node2.company.com,...",
-    "spark.driver.host": "<pio-machine-address>"
-
   },
 ```
 

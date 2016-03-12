@@ -244,6 +244,7 @@ discovery.zen.ping.unicast.hosts: ["some-master", "some-slave-1", "some-slave-2"
 This [tutorial](https://hbase.apache.org/book.html#quickstart_fully_distributed) is the **best guide**, many others produce incorrect results . The primary thing to remember is to install and configure on a single machine, adding all desired hostnames to `backupmasters`, `regionservers`, and to the `hbase.zookeeper.quorum` config param, then copy **all code and config** to all other machines with something like `scp -r ...` Every machine will then be identical. 
 
 6.4.1 Configure with these changes to `/usr/local/hbase/conf`
+
   - `conf/hbase-site.xml`
 
         <configuration>
@@ -286,7 +287,7 @@ This [tutorial](https://hbase.apache.org/book.html#quickstart_fully_distributed)
   - `conf/hbase-env.sh`
 
 		export JAVA_HOME=${JAVA_HOME}
-		export HBASE_MANAGES_ZK=true
+		export HBASE_MANAGES_ZK=true # when you want HBase to manage zookeeper
 
 6.4.2 Start HBase
 

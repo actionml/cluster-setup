@@ -15,7 +15,7 @@ In this guide, all servers share all services, except PredictionIO, which runs o
 - Hadoop 2.6.2 (Clustered)
 - Spark 1.6.0 (Clustered)
 - Elasticsearch 1.7.4 (Clustered, standby master)
-- HBase 1.1.3 (Clustered, standby master), due to a bug in pre 1.1.2 HBase it is advised you move to 1.1.3 as quickly as you can.
+- HBase 1.1.3 (Clustered, standby master), due to a bug in 1.1.2 and earlier HBase it is advised you move to 1.1.3 as quickly as you can.
 - PredictionIO 0.9.6 (as of this writing a work in progress so must be built from source [here](https://github.com/actionml/PredictionIO/tree/v0.9.6)) using the v0.9.6 branch.
 - Universal Recommender [here](https://github.com/actionml/template-scala-parallel-universal-recommendation/tree/v0.3.0) using the v0.3.0 branch (Provided by ActionML)
 - 'Nix server, some instructions below are specific to Ubuntu, a Debian derivative
@@ -57,7 +57,7 @@ Download everything to a temp folder like `/tmp/downloads`, we will later move t
 
 2.3 Download [Elasticsearch 1.7.4](https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.7.4.tar.gz) **Note:** Don't use the Elasticsearch 2.x branch until PredictionIO supports it. The change will force and upgrade and pio will not be backwardly compatible with older versions of Elasticsearch.
 
-2.4 Download HBase 1.1.2 (https://www.apache.org/dist/hbase/1.1.2/hbase-1.1.2-src.tar.gz) **Note:** due to a bug in pre 1.1.3 Hbase upgrade this asap to hbase 1.1.3
+2.4 Download [HBase 1.1.3](http://www-us.apache.org/dist/hbase/1.1.3/hbase-1.1.3-bin.tar.gz) **Note:** due to a bug in pre 1.1.3 Hbase upgrade this asap to hbase 1.1.3
 
 2.5 Clone PIO from its root repo into `~/pio`
 
@@ -113,7 +113,7 @@ Don't include the `/bin` folder in the path. This can be problematic so if you g
 	sudo mv /tmp/downloads/hadoop-2.6.2 /opt/hadoop/
 	sudo mv /tmp/downloads/spark-1.6.0 /opt/spark/
 	sudo mv /tmp/downloads/elasticsearch-1.7.4 /opt/elasticsearch/
-	sudo mv /tmp/downloads/hbase-1.1.2 /opt/hbase/
+	sudo mv /tmp/downloads/hbase-1.1.3 /opt/hbase/
 
 **Note:** Keep version numbers, if you upgrade or downgrade in the future just create new symlinks.
 
@@ -122,7 +122,7 @@ Don't include the `/bin` folder in the path. This can be problematic so if you g
 	sudo ln -s /opt/hadoop/hadoop-2.6.2 /usr/local/hadoop
 	sudo ln -s /opt/spark/spark-1.6.0 /usr/local/spark
 	sudo ln -s /opt/elasticsearch/elasticsearch-1.7.4 /usr/local/elasticsearch
-	sudo ln -s /opt/hbase/hbase-1.1.2 /usr/local/hbase
+	sudo ln -s /opt/hbase/hbase-1.1.3 /usr/local/hbase
 	sudo ln -s /home/pio/pio /usr/local/pio
 
 ##6. Setup Clustered services
@@ -387,6 +387,10 @@ You have PredictionIO in `~/pio` so edit ~/pio/conf/pio-env.sh to have these set
 	
 	PIO_STORAGE_REPOSITORIES_EVENTDATA_NAME=pio_event
 	PIO_STORAGE_REPOSITORIES_EVENTDATA_SOURCE=HBASE
+ 
+        #Need to use HDFS here instead of LOCALFS to enable deploying to machines without the local model
+        PIO_STORAGE_REPOSITORIES_MODELDATA_NAME=pio_model
+        PIO_STORAGE_REPOSITORIES_MODELDATA_SOURCE=HDFS
 	
 	# Storage Data Sources, lower level that repos above, just a simple storage API
 	# to use
@@ -419,6 +423,10 @@ You have PredictionIO in `~/pio` so edit ~/pio/conf/pio-env.sh to have these set
 	# to use only localhost for Elasticsearch communications vvv
 	#PIO_STORAGE_SOURCES_ELASTICSEARCH_HOSTS=localhost
 	#PIO_STORAGE_SOURCES_ELASTICSEARCH_PORTS=9300
+	
+	PIO_STORAGE_SOURCES_HDFS_TYPE=hdfs
+        PIO_STORAGE_SOURCES_HDFS_PATH=hdfs://some-master:9000/models
+
 	
 	# HBase Source config
 	PIO_STORAGE_SOURCES_HBASE_TYPE=hbase

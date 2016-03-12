@@ -4,3 +4,4 @@
  - [Starting and stopping a cluster](https://github.com/actionml/cluster-setup/blob/master/start-stop-cluster.md)
  - [Scaling beyond the 3-machine setup](https://github.com/actionml/cluster-setup/blob/master/architecture-and-scaling.md) 
  - [Distributed Services Setup](https://github.com/actionml/cluster-setup/blob/master/distributed-cluster-setup-guide.md)
+ - [Tuning the Universal Recommender](https://github.com/actionml/cluster-setup/blob/master/universal-recommender-tuning.md)

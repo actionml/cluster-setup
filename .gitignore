@@ -1,2 +1,6 @@
+# OSX Finder noise
 .DSStore
 .DS_Store
+
+# emacs backup files
+*~

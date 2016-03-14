@@ -2,7 +2,7 @@
 The default settings of the UR are good for many purposes but getting optimum results may require tuning and at very least many users will wish to know the meaning of the various tuning params.
 
 ##UR Parameters
-Let's start with the full parameter set:
+Let's start with the full parameter set for the training and query. Together they have all the accessible tuning parameters.
 
 ###Complete Parameter Set
 
@@ -131,6 +131,42 @@ When showing an item, such as when you are on a detail page of an e-com site, it
 ##Randomization
 Although this is not yet implemented in the UR it is always a good idea to randomize the ranking of recommendations to some small extent. This can be done by returning 40 recs and adding normally distributed random noise to the ranking number then re-ranking by the result. This will make the 40th recommendation sometimes become the 19th (for example) and if you are showing 20 it means that they 40th recommendation will sometimes get a chance at being recommended. If the user picks it, this will be fed back into the next training session and will improve the trained model. If the user doesn't pick it the ranking will not be increased. This technique turns a recommender in to a giant array of "multi-armed-bandits" that show somewhat randomly sampled items and learn which to favor. This is a very important technique for improving recommendations over time and should not be discounted as a fringe method. This should  always be done for all recommender implementations and will be incorporated into the UR in the Universal Recommender v0.4.0 release.
 
+##Controlling The Popularity Model
+
+The UR allows all items to be ranked by one of several popularity metrics. The need to rank all items is so popularity will work for all forms of property based boosts and filters. This makes the calculation a fairly heavy weight thing that must be done at training time, not at query time. In other words the popularity ranking is pre-calculated by the time the query is made. It is possible to train on all data at one rate (daily, weekly?) and re-train the popularity model alone on a much more frequent rate (hourly?) if needed. This is to account for rapid recent changes in popularity.
+
+**The Popularity Algorithm Parameters**  
+
+    "recsModel": "all",
+    "backfillField": {
+        "name": "popRank" // field name for the property to attache to items
+        "backfillType": "popular", // type of metric
+        "eventNames": ["buy", "view"], // events to count
+        "duration": 259200, // last number of seconds of data to use in calculation
+        "endDate": "ISO8601-date" //most recent date to end the duration
+    },
+    
+**Long Term Popularity**
+
+The `"recsModel"` defaults to `"all"` which means both CCO based recommendations and the type of popularity defined in `"backfillField"`. The `"backfillField"` defaults to ranking all items by the count of primary indicators/event for all time in the training data. This calculates popularity over the long term.
+
+**Update the Popularity Model only**
+
+If you need to update the popularity model only rather than all CCO model data, set `"recsModel"` to `"backfill"`. This means that only the `"backfillField"` will be updated in the currently deployed model. To calculate the normal combined model daily and the `"backfillField"` hourly  you would have one engine.json for daily use and one set for `"recsModel": "backfill"` for hourly training. This type of training is much faster than full model calculation and so better suite to quicker updates.
+
+**Short Term Popularity**
+
+May applications call for items that were popular in the last period, in this case if the period is an hour set the `"duration": 3600` which is the number of seconds in an hour.
+
+**Finding Trending Items**
+
+The `"backfillType": "popular"` means to simply count events for all items from "now" to the `"duration"` number of seconds into the past. A more sophisticated metric might be how quickly the rate of new events is increasing. This is the change in event count/change in time, which can be thought of as the velocity of events for all times. If some items has a rapidly increasing number of events over the last period of time it is said to be "trending". To calculate a **trending** popularity model change to `"backfillType": "trending"`. This will divide the `"duration"` in 2 and calculate the rate of event increase in event for all items.
+
+**Finding Hot Items**
+
+Taking the trending idea one step further the UR also supports `"backfillType": "hot"`, which calculates how quickly trending items are moving up the list. Think of **hot** and being a measure of acceleration. It catches items that may not be globally popular yet but that are quickly moving up, as then items are said to "go viral".
+
+ 
 #Picking the Best Tuning Parameters
 Several of the methods mentioned above can be tested with cross-validation tests but others cannot. For instance increasing data used in training or queries will almost always increase cross-validation test results but randomizations will almost always decrease scores. tuning for recency will also decrease cross-validation results. Unfortunately some of these results are known to be contrary to real-world results from something that trumps offline cross-validation tests&mdash;A/B tests. 
 

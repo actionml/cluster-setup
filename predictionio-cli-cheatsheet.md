@@ -24,6 +24,8 @@ At any point you can run `pio help <some-command> to get a help screen printed w
 
 For some pio commands you must `cd` to an engine-instance directory. This is because the `engine.json` and/or `manifest.json` are either needed or are modified. These commands implement the workflow for creating a "model" from events and launching the PreditionServer to serve queries.
 
+**Important Note:** use standard **or** multi-tenant workflow, not both mixed! If you mix these things will get out of sync for the engine-instance. Reset things by deleting 'manifest.json' and sticking to one or the other. 
+
 ##Standard Workflow
 These commands must be run in this order, but can be repeated once previous commands are run. So many trains are expected after a build and many deploys of the same model are allowed.
 
@@ -38,13 +40,13 @@ This workflow is intended for Users of the Universal Recommender only or Templat
 
 This workflow allows for deployment of code to PredictionServers without running `pio build`, it also allows many models to be served from a single server by using dynamic REST resource routing to address the correct tenant.
 
- - `pio build` if you wish to create your own jars this will do it.
+ - `pio build` if you wish to create your own jars this will do it. This is not necessary since the jar is published and should **never** be done for an engine-instance that you with to use for data.
  - `cp target/scala_2.10/temp* /path/to/pio/plugins/` you may have to create the plugins directory first inside the primary PredictionIO directory.
 
-At this point you can create an app, train, and deploy in any order, there is no need to build again but you must deploy to get any changes to `engine.json` into the global meta-store.
+At this point you can create an app, engine-instance, deploy, and train **in that order**, there is no need to build again but you must deploy to get any changes to `engine.json` into the global meta-store.
 
- - `pio deploy --resource-id <some-resource-id>` this will launch a PredictionServer if one is not already running, it will insert the engine-instance classes to respond to queries. The last deployed model is available at `GET http://<some-prediction-server>:8000/queries.json` where the payload is a template query. A query after deploy may return nothing if there is no model but will not return an error.
- - `pio train` this will work much as in the standard workflow but may be before or after `pio deploy`
+ - `pio deploy --resource-id <some-resource-id>` this will launch a PredictionServer if one is not already running, it will insert the engine-instance classes to respond to queries. This must be done on all PredictionServers.
+ - `pio train` (re)trains and attaches the model to any deployed instances--this is done on one machine.
  
 
  

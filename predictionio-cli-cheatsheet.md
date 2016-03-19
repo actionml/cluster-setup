@@ -36,12 +36,12 @@ These commands must be run in this order, but can be repeated once previous comm
  
 ##Multi-tenant Workflow
 
-This workflow is intended for Users of the Universal Recommender only or Templates that do not require a Spark context to run (like the UR). This is currently only implemented in the Enterprise version of PredictionIO. Email support@actionml.com for details.
+This workflow is intended for Users of the Universal Recommender only or Templates that do not require a Spark context to run (like the UR). This is currently only implemented in the Enterprise version of PredictionIO. Email [support@actionml.com](mailto:support@actionml.com) for details.
 
 This workflow allows for deployment of code to PredictionServers without running `pio build`, it also allows many models to be served from a single server by using dynamic REST resource routing to address the correct tenant.
 
- - `pio build` if you wish to create your own jars this will do it. This is not necessary since the jar is published and should **never** be done for an engine-instance that you with to use for data.
- - `cp target/scala_2.10/temp* /path/to/pio/plugins/` you may have to create the plugins directory first inside the primary PredictionIO directory.
+ - `pio build` if you wish to create your own jars this will do it. This is not necessary since the jar is published and should **never** be done for an engine-instance that you with to use for data. Do this only once and only to create jars.
+ - `cp target/scala_2.10/temp* /path/to/pio/plugins/` you may have to create the plugins directory first inside the primary PredictionIO directory.n This must be done on all PredictionSever machines.
 
 At this point you can create an app, engine-instance, deploy, and train **in that order**, there is no need to build again but you must deploy to get any changes to `engine.json` into the global meta-store.
 

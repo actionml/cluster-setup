@@ -20,8 +20,13 @@ A full list of tuning and config parameters is below. See the field description 
           "name": "some-data",
           "appName": "URApp1",
           "eventNames": ["buy", "view"]
-        }
-      },
+          "eventWindow": {
+	        "duration": "3 days",
+            "removeDuplicates":true,
+            "compressProperties":true
+	      } 
+       }
+     },
       “comment”: “This is for Mahout and Elasticsearch, the values are minimums and should not be removed”,
       "sparkConf": {
         "spark.serializer": "org.apache.spark.serializer.KryoSerializer",
@@ -50,7 +55,7 @@ A full list of tuning and config parameters is below. See the field description 
 				"name": "popRank"
   				"backfillType": "popular",
   				"eventNames": ["buy", "view"],
-  				"duration": 259200,
+  				"duration": "3 days", 
   				"endDate": "ISO8601-date" //most recent date to end the duration
   			},
             "expireDateName": "expireDateFieldName",
@@ -137,18 +142,20 @@ The UR allows all items to be ranked by one of several popularity metrics. The n
 
 **The Popularity Algorithm Parameters**  
 
+For the meaning and method for setting these values see the Universal Recommender docs in the [readme.md](https://github.com/actionml/template-scala-parallel-universal-recommendation)
+
     "recsModel": "all",
-    "backfillField": {
-        "name": "popRank" // field name for the property to attache to items
-        "backfillType": "popular", // type of metric
-        "eventNames": ["buy", "view"], // events to count
-        "duration": 259200, // last number of seconds of data to use in calculation
-        "endDate": "ISO8601-date" //most recent date to end the duration
-    },
+	"backfillField": {
+		"name": "popRank" // name of Elasticsearch index field
+		"backfillType": "popular", // type of calculation
+		"eventNames": ["buy", "view"], // events to use in calculation
+		"duration": "3 days", // A Scala duration, parsed accordingly
+		"endDate": "ISO8601-date" // used in tests, avoid usage otherwise
+	},
     
 **Long Term Popularity**
 
-The `"recsModel"` defaults to `"all"` which means both CCO based recommendations and the type of popularity defined in `"backfillField"`. The `"backfillField"` defaults to ranking all items by the count of primary indicators/event for all time in the training data. This calculates popularity over the long term.
+The `"recsModel"` defaults to `"all"` which means to return CCO based recommendations and backfill, if necessary from the type of popularity defined in `"backfillField"`. The `"backfillField"` defaults to ranking all items by the count of primary indicators/event for all time in the training data. This calculates popularity over the long term.
 
 **Update the Popularity Model only**
 
@@ -156,15 +163,15 @@ If you need to update the popularity model only rather than all CCO model data, 
 
 **Short Term Popularity**
 
-May applications call for items that were popular in the last period, in this case if the period is an hour set the `"duration": 3600` which is the number of seconds in an hour.
+Whether popular items are being used to backfill when not enough recommendations are available or if they are being queried for directly all popular items are based on the `backfillField: duration:`, which defines the period from now to `duration` in the past. Any of the events listed in `eventNames` are used in the calculation. For example if the period is an hour set the `"duration": "1 hour"`. The string is parsed by the Scala `Duration` class.
 
 **Finding Trending Items**
 
-The `"backfillType": "popular"` means to simply count events for all items from "now" to the `"duration"` number of seconds into the past. A more sophisticated metric might be how quickly the rate of new events is increasing. This is the change in event count/change in time, which can be thought of as the velocity of events for all times. If some items has a rapidly increasing number of events over the last period of time it is said to be "trending". To calculate a **trending** popularity model change to `"backfillType": "trending"`. This will divide the `"duration"` in 2 and calculate the rate of event increase in event for all items.
+The `"backfillType": "popular"` means to simply count events for all items from "now" to the `"duration"` into the past. A more sophisticated metric might be how quickly the rate of new events is increasing. This is the change in event count over the change in time, which can be thought of as the velocity of events for the duration. If some items have a rapidly increasing number of events over the last period of time it is said to be "trending". To calculate a **trending** popularity model change to `"backfillType": "trending"`. This will divide the `"duration"` in 2 creating 2 event counts and calculate the rate of event increase in events for all items. So trending = ((#events in period 1) - (#events in period 1)/change in time), and since the change in time doesn't matter for ranking purposes it is not used in the denominator. Period 1 is the most recent and period 2 is the furthest back in time.
 
 **Finding Hot Items**
 
-Taking the trending idea one step further the UR also supports `"backfillType": "hot"`, which calculates how quickly trending items are moving up the list. Think of **hot** and being a measure of acceleration. It catches items that may not be globally popular yet but that are quickly moving up, as then items are said to "go viral".
+Taking the trending idea one step further the UR also supports `"backfillType": "hot"`, which calculates how quickly trending items are moving up the list. Think of **hot** and being a measure of acceleration. It catches items that may not be globally popular yet, but are quickly moving up. These items are sometimes said to be "going viral". The actual calculation is is similar to Trending but looks at 3 periods and calculates the increase in trending rather than increase in event counts.
 
  
 #Picking the Best Tuning Parameters

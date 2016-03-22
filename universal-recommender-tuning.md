@@ -101,15 +101,15 @@ A full list of tuning and config parameters is below. See the field description 
 	  "returnSelf": true | false,
 	}
 	
-##Getting Training Working
+##`pio train` OOM error
 
-Although it's not really an algorithm tuning issue, it's extrememly important&mdash;after all if you can't get `pio train` to run, who care about algorith tuning?
+Although it's not really an algorithm tuning issue, it's extremely important&mdash;after all if you can't get `pio train` to run, who care about algorithm tuning?
 
-The primary issue you will run into in getting the Spark based `pio train` working with the UR is in allocating enough memory but not too much. To understand how "standalone" Spark works see the [Apache Spark docs](http://spark.apache.org/). The primary thing to note is that a "driver" runs on the machine you run `pio train` on. This driver launches jobs on a Spark Executor or Worker. In the default Spark setup there is one Executor per Worker and one Worker per node. So of an Executor per node machine and a driver for one machine. For a single machine setup this means the driver and executor are running on a single machine.
+The primary issue you will run into in getting the Spark based `pio train` working with the UR is in allocating enough memory but not too much. To understand how "standalone" Spark works see the [Apache Spark docs](http://spark.apache.org/). The primary thing to note is that a "driver" runs on the machine you run `pio train` on. This driver launches jobs on a Spark Executor or Worker. In the default Spark setup there is one Executor per Worker and one Worker per node. So an Executor per node machine and a driver for one machine. For a single machine setup this means we must account for both driver and executor with separate memory allocation since they do not share the memory.
 
 **Maximum driver memory**: Take the amount of memory on the driver machine and subtract whatever is needed to run everything else that is installed on this machine. What is left over is available for the Spark driver. For a single machine setup this may be extremely limiting so use a machine with more than 32g of main memory (and a single machine setup is not recommended). This **maximum available driver memory** should never be exceeded in job configuration.
 
-**Maximum executor memory**: is calculated in the same way as driver memory, but remember that if driver and executor are running on the same machine they must be treated as separate processes so the driver memory must also be substracted from the total available along with all other processes. This **maximum executor memory** should never be exceeded in job configuration.
+**Maximum executor memory**: is calculated in the same way as driver memory above, but remember that if driver and executor are running on the same machine they must be treated as separate processes so the driver memory must also be subtracted from the total available along with all other processes. This **maximum executor memory** should never be exceeded in job configuration.
 
 After determining the absolute maximum for driver and executor, the least of these is the algorithm limit because they need roughly the same amount. 
 
@@ -117,7 +117,7 @@ After determining the absolute maximum for driver and executor, the least of the
 
 **Out of Memory OOM exceptions**: You will need to give the driver and executor enough memory to run but never exceed the amount available, violating either restrictions may cause an Out of Memory (OOM) Exception. If too much is allocated the OOM comes when a driver or executor tries to allocate more memory than is left after other processes and physical limits are reached. When there is not enough for ids, the OOM comes when the data exceeds the amount set by job configuration.
 
-**Allocating Memory for Driver and Executors** Staying under the absolute maximums described above, try increasing amounts of memory until the job runs consistently. The needs may change with increasing number of users or items so you may wish to add a little extra so you don't have to change this value often. Allocate the same amount to driver and executor. The driver memory is allocated before the Spark context is created so must be set on the command line, the executor can be set either on the CLI or in `sparkConf` in engine.json. the CLI will override the `sparkConf` so setting with something like the following will work:
+**Allocating Memory for Driver and Executors** Staying under the absolute maximums described above, try increasing amounts of memory until the job runs consistently. The needs may change with an increasing number of users or items and you may wish to add a little extra so you don't have to change this value often. Allocate the same amount to driver and executor. The driver memory is allocated before the Spark context is created so must be set on the command line, the executor can be set either on the CLI or in `sparkConf` in engine.json. the CLI will override the `sparkConf` so setting with something like the following will work:
 
     pio train -- --driver-memory 8g --executor-memory 8g
     

@@ -100,6 +100,30 @@ A full list of tuning and config parameters is below. See the field description 
 	  “blacklistItems”: [“itemId1”, “itemId2”, ...]
 	  "returnSelf": true | false,
 	}
+	
+##Getting Training Working
+
+Although it's not really an algorithm tuning issue, it's extrememly important&mdash;after all if you can't get `pio train` to run, who care about algorith tuning?
+
+The primary issue you will run into in getting the Spark based `pio train` working with the UR is in allocating enough memory but not too much. To understand how "standalone" Spark works see the [Apache Spark docs](http://spark.apache.org/). The primary thing to note is that a "driver" runs on the machine you run `pio train` on. This driver launches jobs on a Spark Executor or Worker. In the default Spark setup there is one Executor per Worker and one Worker per node. So of an Executor per node machine and a driver for one machine. For a single machine setup this means the driver and executor are running on a single machine.
+
+**Maximum driver memory**: Take the amount of memory on the driver machine and subtract whatever is needed to run everything else that is installed on this machine. What is left over is available for the Spark driver. For a single machine setup this may be extremely limiting so use a machine with more than 32g of main memory (and a single machine setup is not recommended). This **maximum available driver memory** should never be exceeded in job configuration.
+
+**Maximum executor memory**: is calculated in the same way as driver memory, but remember that if driver and executor are running on the same machine they must be treated as separate processes so the driver memory must also be substracted from the total available along with all other processes. This **maximum executor memory** should never be exceeded in job configuration.
+
+After determining the absolute maximum for driver and executor, the least of these is the algorithm limit because they need roughly the same amount. 
+
+**Actual memory needed** is proportional to the number of ids in the dataset&mdash;proportional to the size of total string storage for all user and item ids, including secondary indicator ids (categories, genres, locations, etc). This will be anywhere from 5g to 20g (the largest requirement we have seen). 
+
+**Out of Memory OOM exceptions**: You will need to give the driver and executor enough memory to run but never exceed the amount available, violating either restrictions may cause an Out of Memory (OOM) Exception. If too much is allocated the OOM comes when a driver or executor tries to allocate more memory than is left after other processes and physical limits are reached. When there is not enough for ids, the OOM comes when the data exceeds the amount set by job configuration.
+
+**Allocating Memory for Driver and Executors** Staying under the absolute maximums described above, try increasing amounts of memory until the job runs consistently. The needs may change with increasing number of users or items so you may wish to add a little extra so you don't have to change this value often. Allocate the same amount to driver and executor. The driver memory is allocated before the Spark context is created so must be set on the command line, the executor can be set either on the CLI or in `sparkConf` in engine.json. the CLI will override the `sparkConf` so setting with something like the following will work:
+
+    pio train -- --driver-memory 8g --executor-memory 8g
+    
+In pio the `--` separates any pio command line parameters from the `sparksubmit` parameters. You may put any valid Spark CLI params after the `--`.
+
+**Why?** The driver for `pio train` creates a BiMap (made of 2 Hashmaps) for each id type, so one for user-ids, and one for each item-id set. These are then broadcast to each executor/worker/node in the Spark cluster. So the minimum will be 2 copies, one for the driver and one of the single executor.
 
 ##Tuning For Recency of User Intent
 

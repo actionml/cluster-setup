@@ -40,7 +40,7 @@ A full list of tuning and config parameters is below. See the field description 
         {
           "name": "ur",
           "params": {
-            "appName": "URApp1",
+            "appName": "app1",
             "indexName": "urindex",
             "typeName": "items",
             "eventNames": ["buy", "view"]
@@ -55,7 +55,7 @@ A full list of tuning and config parameters is below. See the field description 
 				"name": "popRank"
   				"backfillType": "popular",
   				"eventNames": ["buy", "view"],
-  				"duration": "3 days", 
+  				"duration": "3 days", // note that this has changed from v0.2.3
   				"endDate": "ISO8601-date" //most recent date to end the duration
   			},
             "expireDateName": "expireDateFieldName",
@@ -127,13 +127,24 @@ In pio the `--` separates any pio command line parameters from the `sparksubmit`
 
 ##Tuning For Recency of User Intent
 
-For cases with lots of usage data, so > 10 primary event per user, if may be beneficial to use only then most recent events for returning recommendations. The thinking behind this is that the most recent history is a better indicator of what is on the user's mind, what they are currently interested in. To do this change `maxQueryEvents` to a smaller number than the average for the entire data set. So if the average for all users is 20 primary events/user you may want to try `""maxQueryEvents": 10". This will use the 10 most recent events to return recommendations. It is still desirable to have  the full dataset used in training to model and this param doe not affect training. 
+In "newsy" applications where an item has a short lifetime as far as usefulness to users, you will see interactions with items diminish quite rapidly. This is because some items are only of interest when they are new. The UR allows us to tune several parts of the algorithm to meet this need.
+
+ - **Robust model**: It might be tempting to think a model build only on recent events would be the best thing to do here and that is possible but also somewhat wrong. Older items may still be useful in creation of the UR model since they are still related to newer items and since they will still give information about one user's similarity of taste with another's, So create models with an high number or primary events per user, even if you have to use older events. The event age is controlled in `datasource: params: eventWindow:`. Set this to encompass a reasonable number of primary events per user.
+ - **Recency of User Intent**: If we have lots of user data, as will be the case with a large `eventWindow`, we can limit the number of events used to calculate recommendations. This is a separate tuning param from the number used to calculate the model. Set `algorithms: params: maxQueryEvents:` to something smaller than the average. This will take the most recent events, indicating the user's most recent interests, to use for returning recommendations. This method may be useful in non-newsy app too.
+ - **Return Only New-ish Items**: Now that we have a robust large model, and are using only recent user events for recs we must guarantee that only new items are returned (this is optional because older items may also be of interest to the user). We do this with a date-based filter. In the **engine.json** specify a `"dateName": "publishedDate"` and make sure to set this with a property using the $set event for each item. Then in the **query** specify a date range for acceptable items: 
+
+	    "dateRange"": {
+		  "name": "publishedDate",
+		  "beforeDate": tomorrow-date
+		  "afterDate": some-back-date
+	   }
+
 
 ##Better Model at the Expense of Training/Query Time
 
 At the core of the Universal Recommender is the "Correlated Cross-Occurrence" algorithm, which creates the model used in making recommendations. The more data you include, the better the model will work but this is true with rapidly diminishing returns. One study of this effect was done by one of the CCO creators [here](https://ssc.io/pdf/rec11-schelter.pdf). This leads us to limit the actual data used to calculate the CCO model by downsampling. This will produce slightly worse results but keep the training time O(n) where n is the number of downsampled interactions used. 
 
-Tom effectively disable downsampling change `"maxEventsPerEventType": 500` to some very large integer to get all data into the model calculation and `"maxCorrelatorsPerEventType": 50,` to a likewise large number to increase the number stored in the model. Increasing `"maxEventsPerEventType"` will make training slower and increasing `"maxCorrelatorsPerEventType"` will make search engine indexing and queries slower.
+To effectively disable downsampling change `"maxEventsPerEventType": 500` to some very large integer to get all data into the model calculation and `"maxCorrelatorsPerEventType": 50,` to a likewise large number to increase the number stored in the model. Increasing `"maxEventsPerEventType"` will make training slower and increasing `"maxCorrelatorsPerEventType"` will make search engine indexing and queries slower.
 
 If training and query times are not a factor these can safely be increased with little chance of other bad side effects.
 

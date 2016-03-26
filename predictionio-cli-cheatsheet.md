@@ -47,7 +47,25 @@ At this point you can create an app, engine-instance, deploy, and train **in tha
 
  - `pio deploy --resource-id <some-resource-id>` this will launch a PredictionServer if one is not already running, it will insert the engine-instance classes to respond to queries. This must be done on all PredictionServers.
  - `pio train` (re)trains and attaches the model to any deployed instances--this is done on one machine.
- 
+
+##Multi-tenant Query
+
+Once the multi-tenant version of pio is installed, you can follow the old workflow, but the resource-id for queries is auto-generated and put in `manifest.json` as the `"id":`. Or you can follow the new workflow with deploy before train, where you supply a resource-id on the CLI. In either case use a query with the resource-id just after the PredictionServer address, for example:
+
+	curl -H "Content-Type: application/json" -d '
+	{
+	    "user": "some-user-id"
+	}' http://some-prediction-server:8000/tenant-1/queries.json
+	
+This assumes the following had been done:
+
+	cd path/to/engine
+	# just to be safe, an auto-generated manifest is bad here
+	rm manifest.json 
+	# this creates a manifest.json and deploys the PredictionServer
+	pio deploy --resource-id tenant-1 
+	# this will connect the newly created model with the deployed PredictionServer
+	pio train 
 
  
 

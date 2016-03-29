@@ -57,7 +57,7 @@ Download everything to a temp folder like `/tmp/downloads`, we will later move t
 
 2.3 Download [Elasticsearch 1.7.4](https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.7.4.tar.gz) **Note:** Don't use the Elasticsearch 2.x branch until PredictionIO supports it. The change will force and upgrade and pio will not be backwardly compatible with older versions of Elasticsearch.
 
-2.4 Download [HBase 1.1.3](http://www-us.apache.org/dist/hbase/1.1.3/hbase-1.1.3-bin.tar.gz) **Note:** due to a bug in pre 1.1.3 Hbase upgrade this asap to hbase 1.1.3
+2.4 Download [HBase 1.1.4](http://www-us.apache.org/dist/hbase/1.1.4/hbase-1.1.4-bin.tar.gz) **Note:** due to a bug in pre 1.1.3 Hbase upgrade this asap to hbase 1.1.3+
 
 2.5 Clone PIO from its root repo into `~/pio`
 

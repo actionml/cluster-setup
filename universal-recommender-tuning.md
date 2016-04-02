@@ -21,9 +21,9 @@ A full list of tuning and config parameters is below. See the field description 
           "appName": "URApp1",
           "eventNames": ["buy", "view"]
           "eventWindow": {
-	        "duration": "3 days",
-            "removeDuplicates":true,
-            "compressProperties":true
+	        "duration": "3650 days",
+            "removeDuplicates": false,
+            "compressProperties": false
 	      } 
        }
      },
@@ -171,11 +171,11 @@ When showing an item, such as when you are on a detail page of an e-com site, it
 ##Randomization
 Although this is not yet implemented in the UR it is always a good idea to randomize the ranking of recommendations to some small extent. This can be done by returning 40 recs and adding normally distributed random noise to the ranking number then re-ranking by the result. This will make the 40th recommendation sometimes become the 19th (for example) and if you are showing 20 it means that they 40th recommendation will sometimes get a chance at being recommended. If the user picks it, this will be fed back into the next training session and will improve the trained model. If the user doesn't pick it the ranking will not be increased. This technique turns a recommender in to a giant array of "multi-armed-bandits" that show somewhat randomly sampled items and learn which to favor. This is a very important technique for improving recommendations over time and should not be discounted as a fringe method. This should  always be done for all recommender implementations and will be incorporated into the UR in the Universal Recommender v0.4.0 release.
 
-##Controlling The Popularity Model
+##Controlling The Popularity Model (popModel)
 
 The UR allows all items to be ranked by one of several popularity metrics. The need to rank all items is so popularity will work for all forms of property based boosts and filters. This makes the calculation a fairly heavy weight thing that must be done at training time, not at query time. In other words the popularity ranking is pre-calculated by the time the query is made. It is possible to train on all data at one rate (daily, weekly?) and re-train the popularity model alone on a much more frequent rate (hourly?) if needed. This is to account for rapid recent changes in popularity.
 
-**The Popularity Algorithm Parameters**  
+###The Popularity Algorithm Parameters
 
 For the meaning and method for setting these values see the Universal Recommender docs in the [readme.md](https://github.com/actionml/template-scala-parallel-universal-recommendation)
 
@@ -188,27 +188,58 @@ For the meaning and method for setting these values see the Universal Recommende
 		"endDate": "ISO8601-date" // used in tests, avoid usage otherwise
 	},
     
-**Long Term Popularity**
+###Long Term Popularity
 
 The `"recsModel"` defaults to `"all"` which means to return CCO based recommendations and backfill, if necessary from the type of popularity defined in `"backfillField"`. The `"backfillField"` defaults to ranking all items by the count of primary indicators/event for all time in the training data. This calculates popularity over the long term.
 
-**Update the Popularity Model only**
+###Update the Popularity Model only
 
 If you need to update the popularity model only rather than all CCO model data, set `"recsModel"` to `"backfill"`. This means that only the `"backfillField"` will be updated in the currently deployed model. To calculate the normal combined model daily and the `"backfillField"` hourly  you would have one engine.json for daily use and one set for `"recsModel": "backfill"` for hourly training. This type of training is much faster than full model calculation and so better suite to quicker updates.
 
-**Short Term Popularity**
+###Short Term Popularity
 
 Whether popular items are being used to backfill when not enough recommendations are available or if they are being queried for directly all popular items are based on the `backfillField: duration:`, which defines the period from now to `duration` in the past. Any of the events listed in `eventNames` are used in the calculation. For example if the period is an hour set the `"duration": "1 hour"`. The string is parsed by the Scala `Duration` class.
 
-**Finding Trending Items**
+###Finding Trending Items
 
 The `"backfillType": "popular"` means to simply count events for all items from "now" to the `"duration"` into the past. A more sophisticated metric might be how quickly the rate of new events is increasing. This is the change in event count over the change in time, which can be thought of as the velocity of events for the duration. If some items have a rapidly increasing number of events over the last period of time it is said to be "trending". To calculate a **trending** popularity model change to `"backfillType": "trending"`. This will divide the `"duration"` in 2 creating 2 event counts and calculate the rate of event increase in events for all items. So trending = ((#events in period 1) - (#events in period 1)/change in time), and since the change in time doesn't matter for ranking purposes it is not used in the denominator. Period 1 is the most recent and period 2 is the furthest back in time.
 
-**Finding Hot Items**
+###Finding Hot Items
 
 Taking the trending idea one step further the UR also supports `"backfillType": "hot"`, which calculates how quickly trending items are moving up the list. Think of **hot** and being a measure of acceleration. It catches items that may not be globally popular yet, but are quickly moving up. These items are sometimes said to be "going viral". The actual calculation is is similar to Trending but looks at 3 periods and calculates the increase in trending rather than increase in event counts.
 
- 
+###Popular Items Query
+
+The query of any of the above popModel configurations is the same since they all rank all items. You ask for recommendations but do not specify user or item.
+
+	{
+	}
+
+This query takes all of the same parameters as any other query so you can use boosts and filters. For instance if you wanted to query for popular items of a certain category, and if you have given items a property from the list `"categories": ["electronics", "accessories", "phones"] The following query would return only popular phones:
+
+	{
+	  “fields”: [
+	    {
+	      “name”: “categories”
+	      “values”: [“phones”],
+	      “bias”: -1
+	    }
+      ]
+   	}
+   	
+The `bias: -1` will turn it into a filter, meaning to return nothing that does not contain the `"categories": ["phones"]` so your results will be the most popular items as specified by the popModel tuning params.
+
+##Setting the eventWindow
+
+The `datasource: params: eventWindow` controls the events stored in the EventServer. The parameters control cleaning and compaction of the persisted events in the EventServer and will drop events so be careful with it and make backups of the EventServer contents before experimenting with this feature. The default is to use no `eventWindow` so it is safe to ignore until you need to limit the data you are accumulating.
+
+Rules for setting the `eventWindow` params:
+
+ - More data is usually better, but with diminishing returns. After users start to have something like 500 primary events, or whatever you set for `maxEventsPerEventType` you will not get much benefit from more data. So set the time window to be no larger than whatever supports this.
+ - The `eventWindow` also controls de-duplication, and property change compression, which both will help keep the EventStore well compacted. Even it your `eventWindow: duration` is large, it may be useful to compact the EventStore.
+ 	- De-duplication applies to usage events, and for many algorithms only one such event is actually used so if your data gathering happens to create a lot of dups this will be useful to do
+ 	-  
+
 #Picking the Best Tuning Parameters
 Several of the methods mentioned above can be tested with cross-validation tests but others cannot. For instance increasing data used in training or queries will almost always increase cross-validation test results but randomizations will almost always decrease scores. tuning for recency will also decrease cross-validation results. Unfortunately some of these results are known to be contrary to real-world results from something that trumps offline cross-validation tests&mdash;A/B tests. 
 

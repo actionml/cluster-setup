@@ -18,7 +18,7 @@ At any point you can run `pio help <some-command> to get a help screen printed w
  - `pio app list` list information about apps the systems knows about, this is used primarily to see which collections of data are registered with the EventServer.
  - `pio app new <appname>` this creates an empty collection and a key that can be used to send events to the EventServer.
  - `pio app delete <appname>` remove app and all data from the EventServer
- - `pio app datadelete <appname>
+ - `pio app data-delete <appname>
 
 #Workflow Commands
 

@@ -1,6 +1,6 @@
-#ActionML Standalone Cluster Setup Guide
+#ActionML Small High Availabiltiy Cluster Setup Guide
 
-This is a guide to setting up PredictionIO and the Universal Recommender in a 3 node cluster with all services running on the 3 cluster machines. For setting up to use all external cluster machines see the "Distributed Cluster Setup Guide".
+This is a guide to setting up PredictionIO and the Universal Recommender in a 3 node cluster with all services running on )the 3 cluster machines. For setting up to use all external cluster machines see the "Distributed Cluster Setup Guide".
 
 In this guide all services are setup with multiple or standby masters in true clustered mode. To make  High Availability complete, a secondary master would need to be setup for HDFS (not described here). Elasticsearch and HBase are setup in High Availability mode (HA) using this guide.
 

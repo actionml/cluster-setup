@@ -4,7 +4,12 @@ This is a guide to setting up PredictionIO and the Universal Recommender in a 3 
 
 In this guide all services are setup with multiple or standby masters in true clustered mode. To make  High Availability complete, a secondary master would need to be setup for HDFS (not described here). Elasticsearch and HBase are setup in High Availability mode (HA) using this guide.
 
-You can also setup more servers and distribute the services mentioned here differently. One of the first places you might want to do this is to use something like AWS EMR for Spark. If you are using the Universal Recommender this will only be needed in the `pio train` phase and is a heavy-weight operations. See the end of this guide to scale beyond this 3-machine setup.
+####Other Guides:
+
+ - **Small High Availabiltiy Cluster Setup Guide**: For a 3 machines with all services running on all machine in HA mode see [this guide](https://github.com/actionml/cluster-setup/blob/master/small-ha-cluster-setup.md). For this setup make sure to give each machine 16g or more. 
+ - **Distributed Cluster Setup Guide**: For setting up to use all external cluster machines for a large scale installation see [this guide](https://github.com/actionml/cluster-setup/blob/master/distributed-cluster-setup-guide.md).
+
+You can also setup more servers and distribute the services mentioned here differently. One of the first places you might want to do this is to use an external Spark Worker as is shown in the Small HA Cluster Setup Guide. If you are using the Universal Recommender this will only be needed in the `pio train` phase and is a heavy-weight operations. See the end of this guide to scale beyond this 3-machine setup.
 
 Note also that the details of having any single machine reboot and rejoin all clusters are left to the reader and not covered here.
 

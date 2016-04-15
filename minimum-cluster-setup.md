@@ -7,37 +7,46 @@ This is a guide to setting up PredictionIO and the Universal Recommender in a 3 
  - **Small High Availabiltiy Cluster Setup Guide**: For a 3 machines with all services running on all machine in HA mode see [this guide](https://github.com/actionml/cluster-setup/blob/master/small-ha-cluster-setup.md). For this setup make sure to give each machine 16g or more. 
  - **Distributed Cluster Setup Guide**: For setting up to use all external cluster machines for a large scale installation see [this guide](https://github.com/actionml/cluster-setup/blob/master/distributed-cluster-setup-guide.md).
 
-In this guide all services are setup with multiple or standby masters in true clustered mode. To make  High Availability complete, a secondary master would need to be setup for HDFS (not described here). Elasticsearch and HBase are setup in High Availability mode (HA) using this guide.
-
-You can also setup more servers and distribute the services mentioned here differently. One of the first places you might want to do this is to use something like AWS EMR for Spark. If you are using the Universal Recommender this will only be needed in the `pio train` phase and is a heavy-weight operations. See the end of this guide to scale beyond this 3-machine setup.
-
 Note also that the details of having any single machine reboot and rejoin all clusters are left to the reader and not covered here.
 
 ##Requirements
 
-In this guide, all servers share all services, except PredictionIO, which runs only on the master server. Setup of multiple EventServers and PredictionServers is done with load-balancers and is out of the scope of this guide.
+In this guide we create a master that runs all services, is an EventServer and PredictionServer, as well as running the Spark Master, HDFS, Elasticsearch, and HBase. The temporary Spark Workers may be launched before `pio train` and shutdown after.
 
-- Hadoop 2.6.2 (Clustered)
-- Spark 1.6.0 (Clustered)
-- Elasticsearch 1.7.4 (Clustered, standby master)
-- HBase 1.1.4 (Clustered, standby master), due to a bug in 1.1.2 and earlier HBase it is advised you move to 1.1.3+ as quickly as you can.
-- PredictionIO 0.9.6 (as of this writing a work in progress so must be built from source [here](https://github.com/actionml/PredictionIO/tree/v0.9.6)) using the v0.9.6 branch.
-- Universal Recommender [here](https://github.com/actionml/template-scala-parallel-universal-recommendation/tree/v0.3.0) using the v0.3.0 branch (Provided by ActionML)
-- 'Nix server, some instructions below are specific to Ubuntu, a Debian derivative
+- Hadoop 2.6.2
+- Spark 1.6.0
+- Elasticsearch 1.7.5
+- HBase 1.1.4 due to a bug in 1.1.2 and earlier HBase it is advised you move to 1.1.4+ as quickly as you can.
+- PredictionIO 0.9.6 (as of this writing a work in progress so must be built from source [here](https://github.com/actionml/PredictionIO) using the v0.9.6 tag (Provided by ActionML)
+- Universal Recommender [here](https://github.com/actionml/template-scala-parallel-universal-recommendation) using the v0.3.0 tag (Provided by ActionML)
+- 'Nix server, some instructions below are specific to Ubuntu, a Debian derivative and Mac OS X. Using Windows it is advised that you run a VM with a Linux OS.
 
 
 ##1. Setup User, SSH, and host naming on All Hosts:
 
 1.1 Create user for PredictionIO `pio` in each server
 
-    adduser pio # Give it some password
+    adduser aml # Give it some password
 
-1.2 Give the `pio` user sudoers permissions and login to the new user. This setup assumes the pio user as the **owner of all services** including Spark and Hadoop (HDFS).
+1.2 Give the `aml` user sudoers permissions and login to the new user. This setup assumes the pio user as the **owner of all services** including Spark and Hadoop (HDFS).
 
-    usermod -a -G sudo pio
-    sudo su pio # or exit and login as the pio user
+    sudo nano /etc/sudoers.d/sudo-group
+    
+Add this line to the file
+    
+    # Members of the sudo group may gain root privileges
+    # with no password (somewhat controversial)
+    %sudo  ALL=(ALL) NOPASSWD:ALL
 
-Notice that we are now logged in as the `pio` user
+Then save and add aml user to sudoers
+    
+    
+    sudo usermod -a -G sudo aml
+    sudo su aml # or exit and login as the aml user
+    cd ~
+    sudo service sudo restart # just to be sure permission are all active 
+
+Notice that we are now logged in as the `aml` user and are in the home directory
 
 1.3 Setup passwordless ssh between all hosts of the cluster. This is a combination of adding all public keys to `authorized_keys` and making sure that `known_hosts` includes all cluster hosts, including any host to itself. There must be no prompt generated when any host tries to connect via ssh to any other host. **Note:** The importance of this cannot be overstated! If ssh does not connect without requiring a password and without asking for confirmation **nothing else in the guide will work!**
 
@@ -93,7 +102,7 @@ Don't include the `/bin` folder in the path. This can be problematic so if you g
     vim /etc/environment
     # add the following
     export JAVA_HOME=/path/to/open/jdk/jre
-    # some would rather add JAVA_HOME to /home/pio/.bashrc
+    # some would rather add JAVA_HOME to /home/aml/.bashrc
 
 ##4. Create Folders:
 
@@ -103,17 +112,17 @@ Don't include the `/bin` folder in the path. This can be problematic so if you g
 	mkdir /opt/spark
 	mkdir /opt/elasticsearch
 	mkdir /opt/hbase
-	chown pio:pio /opt/hadoop
-	chown pio:pio /opt/spark
-	chown pio:pio /opt/elasticsearch
-	chown pio:pio /opt/hbase
+	chown aml:aml /opt/hadoop
+	chown aml:aml /opt/spark
+	chown aml:aml /opt/elasticsearch
+	chown aml:aml /opt/hbase
 
 
 ##5. Extract Services
 
 5.1 Inside the `/tmp/downloads` folder, extract all downloaded services.
 
-5.2 Move extracted services to their folders. This can be done on the master and then copied to all hosts using `scp` as long as all hosts allow passwordless key based ssh and the ownership has been set correctly on all hosts to `pio:pio`
+5.2 Move extracted services to their folders. This can be done on the master and then copied to all hosts using `scp` as long as all hosts allow passwordless key based ssh and the ownership has been set correctly on all hosts to `aml:aml`
 
 	sudo mv /tmp/downloads/hadoop-2.6.2 /opt/hadoop/
 	sudo mv /tmp/downloads/spark-1.6.0 /opt/spark/
@@ -128,7 +137,7 @@ Don't include the `/bin` folder in the path. This can be problematic so if you g
 	sudo ln -s /opt/spark/spark-1.6.0 /usr/local/spark
 	sudo ln -s /opt/elasticsearch/elasticsearch-1.7.4 /usr/local/elasticsearch
 	sudo ln -s /opt/hbase/hbase-1.1.4 /usr/local/hbase
-	sudo ln -s /home/pio/pio /usr/local/pio
+	sudo ln -s /home/aml/pio /usr/local/pio
 
 ##6. Setup Clustered services
 
@@ -136,7 +145,7 @@ Don't include the `/bin` folder in the path. This can be problematic so if you g
 
 Read [this tutorial](http://www.tutorialspoint.com/hadoop/hadoop_multi_node_cluster.htm)
 
-- Files config: this  defines the defines where the root of HDFS will be. To write to HDFS you can reference this location, for instance in place of a local path like `file:///home/pio/file` you could read or write `hdfs://some-master:9000/user/pio/file`
+- Files config: this  defines the defines where the root of HDFS will be. To write to HDFS you can reference this location, for instance in place of a local path like `file:///home/aml/file` you could read or write `hdfs://some-master:9000/user/aml/file`
 
   - `etc/hadoop/core-site.xml`
 
@@ -242,7 +251,7 @@ discovery.zen.ping.multicast.enabled: false # most cloud services don't allow mu
 discovery.zen.ping.unicast.hosts: ["some-master", "some-slave-1", "some-slave-2"] # add all hosts, masters and/or data nodes
 	```
 
-- copy Elasticsearch and config to all hosts using `scp -r /opt/elasticsearch/... pio@some-host://opt/elasticsearch`. Like HBase, all hosts are identical.
+- copy Elasticsearch and config to all hosts using `scp -r /opt/elasticsearch/... aml@some-host://opt/elasticsearch`. Like HBase, all hosts are identical.
 
 #### 6.4. Setup HBase Cluster (abandon hope all ye who enter here)
 
@@ -309,7 +318,7 @@ Setup PIO on the master or on all servers (if you plan to use a load balancer). 
 
 7.1 Build PredictionIO
 
-We put PredictionIO in `/home/pio/pio` Change to that location and run
+We put PredictionIO in `/home/aml/pio` Change to that location and run
 
     ./make-distribution
 
@@ -349,26 +358,11 @@ You have PredictionIO in `~/pio` so edit ~/pio/conf/pio-env.sh to have these set
 	# This section controls core behavior of PredictionIO. It is very likely that
 	# you need to change these to fit your site.
 
-	# SPARK_HOME: Apache Spark is a hard dependency and must be configured.
+	# Safe config that will work if you expand your cluster later
 	SPARK_HOME=/usr/local/spark
-
-	#POSTGRES_JDBC_DRIVER=$PIO_HOME/lib/postgresql-9.4-1204.jdbc41.jar
-	#MYSQL_JDBC_DRIVER=$PIO_HOME/lib/mysql-connector-java-5.1.37.jar
-
-	# ES_CONF_DIR: You must configure this if you have advanced configuration for
-	#              your Elasticsearch setup.
-	# ES_CONF_DIR=/opt/elasticsearch
 	ES_CONF_DIR=/usr/local/elasticsearch
-
-	# HADOOP_CONF_DIR: You must configure this if you intend to run PredictionIO
-	#                  with Hadoop 2.
-	# HADOOP_CONF_DIR=/opt/hadoop
-	HADOOP_CONF_DIR=/usr/local/hadoop
-
-	# HBASE_CONF_DIR: You must configure this if you intend to run PredictionIO
-	#                 with HBase on a remote cluster.
-	# HBASE_CONF_DIR=$PIO_HOME/vendors/hbase-1.0.0/conf
-	HBASE_CONF_DIR=/usr/local/hbase/conf
+	HADOOP_CONF_DIR=/usr/local/hadoop/etc/handoop
+    HBASE_CONF_DIR=/usr/local/hbase/conf
 
 	# Filesystem paths where PredictionIO uses as block storage.
 	PIO_FS_BASEDIR=$HOME/.pio_store
@@ -378,72 +372,44 @@ You have PredictionIO in `~/pio` so edit ~/pio/conf/pio-env.sh to have these set
 	# PredictionIO Storage Configuration
 	#
 	# This section controls programs that make use of PredictionIO's built-in
-	# storage facilities. Default values are shown below.
-	#
-	# For more information on storage configuration please refer to
-	# https://docs.prediction.io/system/anotherdatastore/
-
+	# storage facilities.
+	
 	# Storage Repositories
 
-	# Default is to use PostgreSQL but for clustered scalable setup we'll use
-	# Elasticsearch
 	PIO_STORAGE_REPOSITORIES_METADATA_NAME=pio_meta
 	PIO_STORAGE_REPOSITORIES_METADATA_SOURCE=ELASTICSEARCH
 
 	PIO_STORAGE_REPOSITORIES_EVENTDATA_NAME=pio_event
 	PIO_STORAGE_REPOSITORIES_EVENTDATA_SOURCE=HBASE
 
-        #Need to use HDFS here instead of LOCALFS to enable deploying to machines without the local model
-        PIO_STORAGE_REPOSITORIES_MODELDATA_NAME=pio_model
-        PIO_STORAGE_REPOSITORIES_MODELDATA_SOURCE=HDFS
+	# Need to use HDFS here instead of LOCALFS to account for future expansion
+	PIO_STORAGE_REPOSITORIES_MODELDATA_NAME=pio_model
+    PIO_STORAGE_REPOSITORIES_MODELDATA_SOURCE=HDFS
 
 	# Storage Data Sources, lower level that repos above, just a simple storage API
 	# to use
 
-	# PostgreSQL Default Settings
-	# Please change "pio" to your database name in PIO_STORAGE_SOURCES_PGSQL_URL
-	# Please change PIO_STORAGE_SOURCES_PGSQL_USERNAME and
-	# PIO_STORAGE_SOURCES_PGSQL_PASSWORD accordingly
-	#PIO_STORAGE_SOURCES_PGSQL_TYPE=jdbc
-	#PIO_STORAGE_SOURCES_PGSQL_URL=jdbc:postgresql://localhost/pio
-	#PIO_STORAGE_SOURCES_PGSQL_USERNAME=pio
-	#PIO_STORAGE_SOURCES_PGSQL_PASSWORD=pio
-
-	# MySQL Example
-	# PIO_STORAGE_SOURCES_MYSQL_TYPE=jdbc
-	# PIO_STORAGE_SOURCES_MYSQL_URL=jdbc:mysql://localhost/pio
-	# PIO_STORAGE_SOURCES_MYSQL_USERNAME=pio
-	# PIO_STORAGE_SOURCES_MYSQL_PASSWORD=pio
-
 	# Elasticsearch Example
 	PIO_STORAGE_SOURCES_ELASTICSEARCH_TYPE=elasticsearch
 	PIO_STORAGE_SOURCES_ELASTICSEARCH_HOME=/usr/local/elasticsearch
-	# The next line is optional and should match the ES cluster.name in ES config
-	#PIO_STORAGE_SOURCES_ELASTICSEARCH_CLUSTERNAME=some-cluster
+	# the next line should match the cluster.name in elasticsearch.yml
+	PIO_STORAGE_SOURCES_ELASTICSEARCH_CLUSTERNAME=some-cluster
 
-	# For clustered Elasticsearch
-	PIO_STORAGE_SOURCES_ELASTICSEARCH_HOSTS=some-master,some-slave-1,some-slave-2
-	PIO_STORAGE_SOURCES_ELASTICSEARCH_PORTS=9300,9300,9300
+	# For single host Elasticsearch, may add hosts and ports later
+	PIO_STORAGE_SOURCES_ELASTICSEARCH_HOSTS=some-master
+	PIO_STORAGE_SOURCES_ELASTICSEARCH_PORTS=9300
 
-	# to use only localhost for Elasticsearch communications vvv
-	#PIO_STORAGE_SOURCES_ELASTICSEARCH_HOSTS=localhost
-	#PIO_STORAGE_SOURCES_ELASTICSEARCH_PORTS=9300
-
+    # dummy models are stored here so use HDFS in case you later want to
+    # expand the Event and PredictionServers
 	PIO_STORAGE_SOURCES_HDFS_TYPE=hdfs
-        PIO_STORAGE_SOURCES_HDFS_PATH=hdfs://some-master:9000/models
-
+    PIO_STORAGE_SOURCES_HDFS_PATH=hdfs://some-master:9000/models
 
 	# HBase Source config
 	PIO_STORAGE_SOURCES_HBASE_TYPE=hbase
 	PIO_STORAGE_SOURCES_HBASE_HOME=/usr/local/hbase
-
-	# HBase localhost config
-	#PIO_STORAGE_SOURCES_HBASE_HOSTS=some-master
-	#PIO_STORAGE_SOURCES_HBASE_PORTS=0
-
-	# Hbase clustered config
-	PIO_STORAGE_SOURCES_HBASE_HOSTS=some-master,some-slave-1,some-slave-2
-	PIO_STORAGE_SOURCES_HBASE_PORTS=0,0,0
+	# Hbase single master config
+	PIO_STORAGE_SOURCES_HBASE_HOSTS=some-master
+	PIO_STORAGE_SOURCES_HBASE_PORTS=0
 
 Then you should be able to run
 
@@ -458,6 +424,8 @@ The status of all the stores is checked and will be printed but no check is made
 ##8. Setup the Universal Recommender
 
 The Universal Recommender is a PredictionIO Template. Refer to the [UR README.md](https://github.com/actionml/template-scala-parallel-universal-recommendation) for configuration.
+
+	INSTALL PIP
 
 To run the integration test start by getting the source code.
 

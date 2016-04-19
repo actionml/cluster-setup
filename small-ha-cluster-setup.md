@@ -66,13 +66,13 @@ Download everything to a temp folder like `/tmp/downloads`, we will later move t
 
 2.5 Clone PIO from its root repo into `~/pio`
 
-    git clone https://github.com/actionml/PredictionIO.git pio
+    git clone https://github.com/actionml/PredictionIO.git ~/pio
     cd ~/pio
     git checkout v0.9.6 #get the latest branch
 
 2.6 Clone Universal Recommender Template from its root repo into `~/universal`
 
-    git clone https://github.com/actionml/template-scala-parallel-universal-recommendation.git universal
+    git clone https://github.com/actionml/template-scala-parallel-universal-recommendation.git ~/universal
 	cd ~/universal
 	git checkout v0.3.0 # or get the latest branch
 

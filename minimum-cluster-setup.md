@@ -14,7 +14,7 @@ Note also that the details of having any single machine reboot and rejoin all cl
 In this guide we create a master that runs all services, is an EventServer and PredictionServer, as well as running the Spark Master, HDFS, Elasticsearch, and HBase. The temporary Spark Workers may be launched before `pio train` and shutdown after.
 
 - Hadoop 2.6.2
-- Spark 1.6.0
+- Spark 1.6.1
 - Elasticsearch 1.7.5
 - HBase 1.1.4 due to a bug in 1.1.2 and earlier HBase it is advised you move to 1.1.4+ as quickly as you can.
 - PredictionIO 0.9.6 (as of this writing a work in progress so must be built from source [here](https://github.com/actionml/PredictionIO) using the v0.9.6 tag (Provided by ActionML)
@@ -32,7 +32,7 @@ In this guide we create a master that runs all services, is an EventServer and P
 
     sudo nano /etc/sudoers.d/sudo-group
     
-Add this line to the file
+Add this line to the file)
     
     # Members of the sudo group may gain root privileges
     # with no password (somewhat controversial)
@@ -137,7 +137,7 @@ Don't include the `/bin` folder in the path. This can be problematic so if you g
 	sudo ln -s /opt/spark/spark-1.6.0 /usr/local/spark
 	sudo ln -s /opt/elasticsearch/elasticsearch-1.7.4 /usr/local/elasticsearch
 	sudo ln -s /opt/hbase/hbase-1.1.4 /usr/local/hbase
-	sudo ln -s /home/aml/pio /usr/local/pio
+	sudo ln -s /home/aml/pio /usr/local/pio		
 
 ##6. Setup Clustered services
 

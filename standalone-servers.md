@@ -1,10 +1,10 @@
 #PredictionIO Standalone Server Guide
 
-This is a guide to setting up the PredictionIO EventServer and Universal Recommender PredictionServer in a standalone fashion. As of the time of writing this, instructions have been available that assumed either the single-host sandbox environment, or a distributed setup which still required installing all the software on all the hosts, even though it wouldn't run there (that is, the instructions assumed installing HBase, ElasticSearch and Spark on all nodes even though only the PIO software would be running).
+This is a guide to setting up the PredictionIO EventServer and Universal Recommender PredictionServer in a standalone fashion so all constituent services run on a single machine. At the end of this guide we will spin up a Spark cluster and offload the majority of training work to the cluster, then take it offline so it costs nothing while idle.
 
 ##Pre-requisites
 
-You should be familiar with the [basic cluster-setup instructions](readme.md).
+Follow the [Small HA Cluster-setup instructions](minimum-cluster-setup.md) except for the following differences. First remember that we will be setting up only one machine. 
 
 ##Build the Artifact
 

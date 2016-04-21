@@ -17,13 +17,13 @@ Note also that the details of having any single machine reboot and rejoin all cl
 
 In this guide, all servers share all services, except PredictionIO, which runs only on the master server. Setup of multiple EventServers and PredictionServers is done with load-balancers and is out of the scope of this guide.
 
-- Hadoop 2.6.2 (Clustered)
-- Spark 1.6.0 (Clustered)
-- Elasticsearch 1.7.4 (Clustered, standby master)
-- HBase 1.1.4 (Clustered, standby master), due to a bug in 1.1.2 and earlier HBase it is advised you move to 1.1.3+ as quickly as you can.
-- PredictionIO 0.9.6 (as of this writing a work in progress so must be built from source [here](https://github.com/actionml/PredictionIO/tree/v0.9.6)) using the v0.9.6 branch.
-- Universal Recommender [here](https://github.com/actionml/template-scala-parallel-universal-recommendation/tree/v0.3.0) using the v0.3.0 branch (Provided by ActionML)
-- 'Nix server, some instructions below are specific to Ubuntu, a Debian derivative
+- Hadoop 2.6.2
+- Spark 1.6.1
+- Elasticsearch 1.7.5
+- HBase 1.1.4 due to a bug in 1.1.2 and earlier HBase it is advised you move to 1.1.4+ as quickly as you can.
+- PredictionIO 0.9.6 (as of this writing a work in progress so must be built from source [here](https://github.com/actionml/PredictionIO) using the v0.9.6 tag (Provided by ActionML)
+- Universal Recommender [here](https://github.com/actionml/template-scala-parallel-universal-recommendation) using the v0.3.0 tag (Provided by ActionML)
+- 'Nix server, some instructions below are specific to Ubuntu, a Debian derivative and Mac OS X. Using Windows it is advised that you run a VM with a Linux OS.
 
 
 ##1. Setup User, SSH, and host naming on All Hosts:
@@ -58,9 +58,9 @@ Download everything to a temp folder like `/tmp/downloads`, we will later move t
 
 2.1 Download [Hadoop 2.6.2](http://www.eu.apache.org/dist/hadoop/common/hadoop-2.6.2/hadoop-2.6.2.tar.gz)
 
-2.2 Download [Spark 1.6.0](http://www.us.apache.org/dist/spark/spark-1.6.0/spark-1.6.0-bin-hadoop2.6.tgz)
+2.2 Download [Spark 1.6.1](http://www.us.apache.org/dist/spark/spark-1.6.1/spark-1.6.1-bin-hadoop2.6.tgz)
 
-2.3 Download [Elasticsearch 1.7.4](https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.7.4.tar.gz) **Note:** Don't use the Elasticsearch 2.x branch until PredictionIO supports it. The change will force and upgrade and pio will not be backwardly compatible with older versions of Elasticsearch.
+2.3 Download [Elasticsearch 1.7.5](https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.7.5.tar.gz) **Note:** Don't use the Elasticsearch 2.x branch until PredictionIO supports it. The change will force and upgrade and pio will not be backwardly compatible with older versions of Elasticsearch.
 
 2.4 Download [HBase 1.1.4](http://www-us.apache.org/dist/hbase/1.1.4/hbase-1.1.4-bin.tar.gz) **Note:** due to a bug in pre 1.1.3 Hbase upgrade this asap to hbase 1.1.3+
 
@@ -207,9 +207,14 @@ Read [this tutorial](http://www.tutorialspoint.com/hadoop/hadoop_multi_node_clus
 
     Do not use `sbin/start-all.sh` because it will needlessly start mapreduce and yarn. These can work together with PredictionIO but for the purposes of this guide they are not needed.
 
-- Create `/hbase` and `/zookeeper` folders under HDFS
+- Create required HDFS directories
 
-      bin/hdfs dfs -mkdir /hbase /zookeeper
+      $ hdfs dfs -mkdir /hbase
+      $ hdfs dfs -mkdir /zookeeper
+      $ hdfs dfs -mkdir /models
+      $ hdfs dfs -mkdir /user
+      $ hdfs dfs -mkdir /user/aml # will be like ~ for user "aml"
+
 
 #### 6.2. Setup Spark Cluster.
 - Read and follow [this tutorial](http://spark.apache.org/docs/latest/spark-standalone.html) The primary thing that must be setup is the masters and slaves, which for our purposes will be the same as for hadoop
@@ -258,7 +263,7 @@ This [tutorial](https://hbase.apache.org/book.html#quickstart_fully_distributed)
 	          <value>hdfs://some-master:9000/hbase</value>
 	        </property>
 
-	         <property>
+	        <property>
 	          <name>hbase.cluster.distributed</name>
 	          <value>true</value>
 	        </property>

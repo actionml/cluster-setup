@@ -8,7 +8,7 @@ Create an instance on AWS (other services may work too, but this is tested on AW
 
 ##Before You Start
 
-Follow the [Small HA Cluster-setup instructions](minimum-cluster-setup.md) except for the following differences:
+Follow the [Small HA Cluster-setup instructions](small-ha-cluster-setup.md) except for the following differences:
 
  - First remember that we will be setting up only one machine so where you see references to more than one, ignore the other machines.
  - Use the Driver Machine's DNS name for setup but never "localhost". This is so it will be easier to scale later. 

@@ -45,3 +45,20 @@ Follow the [Small HA Cluster-setup instructions](minimum-cluster-setup.md) excep
 	Notice the `hbase.zookeeper.quorum` is localhost. Substituting 
 	
  - Do not create the `/usr/local/hbase/conf/backupmasters` file
+ 
+ - Do not use HDFS for the PredictionIO "models" storage so set these value in `/usr/local/pio/conf/pio-env.sh`
+ 
+ 		PIO_STORAGE_REPOSITORIES_MODELDATA_NAME=pio_model
+		PIO_STORAGE_REPOSITORIES_MODELDATA_SOURCE=LOCALFS
+		
+		PIO_STORAGE_SOURCES_LOCALFS_TYPE=localfs
+		PIO_STORAGE_SOURCES_LOCALFS_HOSTS=$PIO_FS_BASEDIR/models
+		
+- install pip to run the Universal Recommender integration-test
+
+		$ sudo apt-get install python-pip
+		$ sudo pip install predictionio
+		$ sudo pip install datetime
+		
+- install the Universal Recommender and run the integrations-test
+

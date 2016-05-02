@@ -12,7 +12,7 @@ Follow the [Small HA Cluster-setup instructions](small-ha-cluster-setup.md) exce
 
  - First remember that we will be setting up only one machine so where you see references to more than one, ignore the other machines.
  - Use the Driver Machine's DNS name for setup but never "localhost". This is so it will be easier to scale later. 
- - Do not use `/etc/hosts` to add names for the Driver Machine, us the internal AWS DNS name in all config. 
+ - Do not use `/etc/hosts` to add names for the Driver Machine, use the internal AWS DNS name in all configs. 
  - For some not well understood reason you must use localhost to point HBase's Zookeeper to the Driver Machine when not in a cluster. So in `/usr/local/hbase/conf/hbase-site.xml` use the following: 
 
 		<configuration>

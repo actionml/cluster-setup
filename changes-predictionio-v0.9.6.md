@@ -1,4 +1,4 @@
-# PredictionIO v0.9.6
+# ActionML's Version of PredictionIO v0.9.6
 
 ActionML maintains a forked version of PredictionIO starting with v0.9.6. The key changes from v0.9.5 are:
 

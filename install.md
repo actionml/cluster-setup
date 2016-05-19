@@ -23,7 +23,7 @@ Proceed to **Build PredictionIO**
 
 For a completely fresh new install, do not use the script on PredictionIO's docs site do the following:
 
- 1. `bash -c "$(curl -s https://github.com/actionml/PredictionIO/blob/develop/bin/install.sh`
+ 1. `bash -c "$(curl -s https://raw.githubusercontent.com/actionml/PredictionIO/develop/bin/install.sh)"`
  
 This will create a `vendors` subdirectory with needed services installed there. This is only for a single machine developer setup and is not advised for Production.
 

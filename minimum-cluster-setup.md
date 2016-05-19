@@ -32,7 +32,7 @@ In this guide we create a master that runs all services, is an EventServer and P
 
     sudo nano /etc/sudoers.d/sudo-group
     
-Add this line to the file)
+Add this line to the file
     
     # Members of the sudo group may gain root privileges
     # with no password (somewhat controversial)
@@ -71,7 +71,7 @@ Download everything to a temp folder like `/tmp/downloads`, we will later move t
 
 2.3 Download [Elasticsearch 1.7.4](https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.7.4.tar.gz) **Note:** Don't use the Elasticsearch 2.x branch until PredictionIO supports it. The change will force and upgrade and pio will not be backwardly compatible with older versions of Elasticsearch.
 
-2.4 Download [HBase 1.1.4](http://www-us.apache.org/dist/hbase/1.1.4/hbase-1.1.4-bin.tar.gz) **Note:** due to a bug in pre 1.1.3 Hbase upgrade this asap to hbase 1.1.3+
+2.4 Download [HBase 1.1.4](http://www-us.apache.org/dist/hbase/1.1.4/hbase-1.1.4-bin.tar.gz) **Note:** due to a bug in pre 1.1.3 Hbase upgrade this asap to HBase 1.1.3+
 
 2.5 Clone PIO from its root repo into `~/pio`
 
@@ -255,7 +255,7 @@ discovery.zen.ping.unicast.hosts: ["some-master", "some-slave-1", "some-slave-2"
 
 #### 6.4. Setup HBase Cluster (abandon hope all ye who enter here)
 
-This [tutorial](https://hbase.apache.org/book.html#quickstart_fully_distributed) is the **best guide**, many others produce incorrect results . The primary thing to remember is to install and configure on a single machine, adding all desired hostnames to `backupmasters`, `regionservers`, and to the `hbase.zookeeper.quorum` config param, then copy **all code and config** to all other machines with something like `scp -r ...` Every machine will then be identical.
+This [tutorial](https://hbase.apache.org/book.html#quickstart_fully_distributed) is the **best guide**, many others produce incorrect results. The primary thing to remember is to install and configure on a single machine, adding all desired hostnames to `backupmasters`, `regionservers`, and to the `hbase.zookeeper.quorum` config param, then copy **all code and config** to all other machines with something like `scp -r ...` Every machine will then be identical.
 
 6.4.1 Configure with these changes to `/usr/local/hbase/conf`
 

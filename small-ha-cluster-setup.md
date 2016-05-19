@@ -1,12 +1,12 @@
 #ActionML Small High Availability Cluster Setup Guide
 
-This is a guide to setting up PredictionIO and the Universal Recommender in a 3 node cluster with all services running on )the 3 cluster machines. For setting up to use all external cluster machines see the "Distributed Cluster Setup Guide".
+This is a guide to setting up PredictionIO and the Universal Recommender in a 3 node cluster with all services running on the 3 cluster machines. For setting up to use all external cluster machines see the "Distributed Cluster Setup Guide".
 
 In this guide all services are setup with multiple or standby masters in true clustered mode. To make  High Availability complete, a secondary master would need to be setup for HDFS (not described here). Elasticsearch and HBase are setup in High Availability mode (HA) using this guide.
 
 ####Other Guides:
 
- - **Minimum Cluster Setup Guide**: For a 3 machines setup with one premanent instance and 2 temporary Spark Workers. All services running on a 30G machine and separate temporary Spark workers see [this guide](https://github.com/actionml/cluster-setup/blob/master/minimum-cluster-setup.md). 
+ - **Minimum Cluster Setup Guide**: For a 3 machines setup with one permanent instance and 2 temporary Spark Workers. All services running on a 30G machine and separate temporary Spark workers see [this guide](https://github.com/actionml/cluster-setup/blob/master/minimum-cluster-setup.md). 
  - **Distributed Cluster Setup Guide**: For setting up to use all external cluster machines for a large scale installation see [this guide](https://github.com/actionml/cluster-setup/blob/master/distributed-cluster-setup-guide.md).
 
 You can also setup more servers and distribute the services mentioned here differently. One of the first places you might want to do this is to use an external Spark Worker as is shown in the Minimum Cluster Setup Guide. If you are using the Universal Recommender this will only be needed in the `pio train` phase and is a heavy-weight operations. See the end of this guide to scale beyond this 3-machine setup.

@@ -72,9 +72,9 @@ Follow the [Small HA Cluster-setup instructions](small-ha-cluster-setup.md) exce
 
  - install pip to import data to the EventServer
 
-	$ sudo apt-get install python-pip
-	$ sudo pip install predictionio
-	$ sudo pip install datetime
+        $ sudo apt-get install python-pip
+        $ sudo pip install predictionio
+        $ sudo pip install datetime
 	
  - get the Universal Recommender
 

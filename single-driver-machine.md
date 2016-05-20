@@ -56,10 +56,10 @@ Follow the [Small HA Cluster-setup instructions](small-ha-cluster-setup.md) exce
 		
  - start platform services
  
-               $ /usr/local/hadoop/sbin/start-dfs.sh
+                $ /usr/local/hadoop/sbin/start-dfs.sh
                 $ /usr/local/spark/start-all.sh # if using the local host to run Spark
 
- - start the pio services and teh EventServer
+ - start the pio services and the EventServer
 
                 $ pio-start-all
 
@@ -67,11 +67,11 @@ Follow the [Small HA Cluster-setup instructions](small-ha-cluster-setup.md) exce
 
                 $ pio-stop-all
                 $ jps -lm 
-                $ # check for orphaned HMaster or HReagionServer or 
+                $ # check for orphaned HMaster or HRegionServer or QuorumServer
                 $ # non-eventserver Console and kill separately to get a clean state
                 $ kill some-pid
 
- - install pip to import data to the EventServe
+ - install pip to import data to the EventServer
 
 		$ sudo apt-get install python-pip
 		$ sudo pip install predictionio

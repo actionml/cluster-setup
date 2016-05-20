@@ -54,11 +54,36 @@ Follow the [Small HA Cluster-setup instructions](small-ha-cluster-setup.md) exce
 		PIO_STORAGE_SOURCES_LOCALFS_TYPE=localfs
 		PIO_STORAGE_SOURCES_LOCALFS_HOSTS=$PIO_FS_BASEDIR/models
 		
-- install pip to run the Universal Recommender integration-test
+- start platform services
+                $ /usr/local/hadoop/sbin/start-dfs.sh
+                $ /usr/local/spark/start-all.sh # if using the local host to run Spark
+
+- start the pio services and teh EventServer
+                $ pio-start-all
+
+- to restart pio serives
+                $ pio-stop-all
+                $ jps -lm 
+                $ # check for orphaned HMaster or HReagionServer or 
+                $ # non-eventserver Console and kill separately to get a clean state
+                $ kill some-pid
+
+- install pip to import data to the EventServe
 
 		$ sudo apt-get install python-pip
 		$ sudo pip install predictionio
 		$ sudo pip install datetime
 		
-- install the Universal Recommender and run the integrations-test
+- get the Universal Recommender
+                $ git clone https://github.com/actionml/template-scala-parallel-universal-recommendation/tree/v0.3.0 universal
+                $ cd universal
+                $ pio app list # to see datasets in teh EventServer
+                $ pio app new handmade # if the app is not there
+                $ python examples/import_handmade.py --access_key key-from-app-list
+
+ - to retrain after any change to data or engin.json
+                $ pio build # do this before every train
+                $ pio train -- --master spark://some-master:7077 --driver-memory 3g
+
+ - to retrain after a pio config change first restart pio as above, them retrain, no need to reimport unless you have rebuild HBase, in which case start from "start platform services" above.
 

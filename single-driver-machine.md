@@ -54,28 +54,31 @@ Follow the [Small HA Cluster-setup instructions](small-ha-cluster-setup.md) exce
 		PIO_STORAGE_SOURCES_LOCALFS_TYPE=localfs
 		PIO_STORAGE_SOURCES_LOCALFS_HOSTS=$PIO_FS_BASEDIR/models
 		
-- start platform services
-                $ /usr/local/hadoop/sbin/start-dfs.sh
+ - start platform services
+ 
+               $ /usr/local/hadoop/sbin/start-dfs.sh
                 $ /usr/local/spark/start-all.sh # if using the local host to run Spark
 
-- start the pio services and teh EventServer
+ - start the pio services and teh EventServer
+
                 $ pio-start-all
 
-- to restart pio serives
+ - to restart pio serives
+
                 $ pio-stop-all
                 $ jps -lm 
                 $ # check for orphaned HMaster or HReagionServer or 
                 $ # non-eventserver Console and kill separately to get a clean state
                 $ kill some-pid
 
-- install pip to import data to the EventServe
+ - install pip to import data to the EventServe
 
 		$ sudo apt-get install python-pip
 		$ sudo pip install predictionio
 		$ sudo pip install datetime
 		
-- get the Universal Recommender
-- 
+ - get the Universal Recommender
+
                 $ git clone https://github.com/actionml/template-scala-parallel-universal-recommendation/tree/v0.3.0 universal
                 $ cd universal
                 $ pio app list # to see datasets in teh EventServer

@@ -72,15 +72,15 @@ Follow the [Small HA Cluster-setup instructions](small-ha-cluster-setup.md) exce
 
  - install pip to import data to the EventServer
 
-	    $ sudo apt-get install python-pip
-	    $ sudo pip install predictionio
-	    $ sudo pip install datetime
+	$ sudo apt-get install python-pip
+	$ sudo pip install predictionio
+	$ sudo pip install datetime
 	
  - get the Universal Recommender
 
         $ git clone https://github.com/actionml/template-scala-parallel-universal-recommendation/tree/v0.3.0 universal
         $ cd universal
-        $ pio app list # to see datasets in teh EventServer
+        $ pio app list # to see datasets in the EventServer
         $ pio app new handmade # if the app is not there
         $ python examples/import_handmade.py --access_key key-from-app-list
 

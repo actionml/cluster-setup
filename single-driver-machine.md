@@ -75,6 +75,7 @@ Follow the [Small HA Cluster-setup instructions](small-ha-cluster-setup.md) exce
 		$ sudo pip install datetime
 		
 - get the Universal Recommender
+- 
                 $ git clone https://github.com/actionml/template-scala-parallel-universal-recommendation/tree/v0.3.0 universal
                 $ cd universal
                 $ pio app list # to see datasets in teh EventServer
@@ -82,6 +83,7 @@ Follow the [Small HA Cluster-setup instructions](small-ha-cluster-setup.md) exce
                 $ python examples/import_handmade.py --access_key key-from-app-list
 
  - to retrain after any change to data or engin.json
+ - 
                 $ pio build # do this before every train
                 $ pio train -- --master spark://some-master:7077 --driver-memory 3g
 

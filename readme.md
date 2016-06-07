@@ -1,4 +1,8 @@
-# ActionML Documentation
+# The ActionML Documentation Has Moved
+
+See the docs on the new site [actionml.com/docs](actionml.com/docs) To suggest changes create a PR against the repo [here](https://github.com/actionml/docs.actionml.com) These docs will be removed in favor of the new github repo and site so please update you bookmarks.
+
+# Depredated ActionML Documentation
  
 ActionML maintains a fork of PredictionIO beginning with v0.9.6. We also invented and maintain several templates including the Universal Recommender. This is the github version of our documentation also found on [ActionML.com](http://actionml.com/docs).
 

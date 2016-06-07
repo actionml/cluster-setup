@@ -1,3 +1,7 @@
+# Guides are moved
+
+These mardown docs in actionml/clustersetup are moved to https://github.com/actionml/docs.actionml.com. Changes there are automatically published to the live site: actionml.com/docs. Please make any PRs to that new repos.
+
 #ActionML Minimum Cluster Setup Guide
 
 This is a guide to setting up PredictionIO and the Universal Recommender in a 3 node cluster with all services running on one large memory (32G) machine and Spark Workers on 2 medium memory (16G) machines. The Spark Workers can be temporary, and spun up for `pio train' only so this is the minimal config for a medium sized UR instance. This setup will scale by creating more "EventServer" and "PredictionServer" instances and by scaling to more Spark Workers. An alternative is to go straight to separated fully clustered services with multiple masters for High Availability and indefinite scalability.
@@ -361,8 +365,8 @@ You have PredictionIO in `~/pio` so edit ~/pio/conf/pio-env.sh to have these set
 	# Safe config that will work if you expand your cluster later
 	SPARK_HOME=/usr/local/spark
 	ES_CONF_DIR=/usr/local/elasticsearch
-	HADOOP_CONF_DIR=/usr/local/hadoop/etc/handoop
-    HBASE_CONF_DIR=/usr/local/hbase/conf
+	HADOOP_CONF_DIR=/usr/local/hadoop/etc/hadoop
+        HBASE_CONF_DIR=/usr/local/hbase/conf
 
 	# Filesystem paths where PredictionIO uses as block storage.
 	PIO_FS_BASEDIR=$HOME/.pio_store
@@ -399,10 +403,10 @@ You have PredictionIO in `~/pio` so edit ~/pio/conf/pio-env.sh to have these set
 	PIO_STORAGE_SOURCES_ELASTICSEARCH_HOSTS=some-master
 	PIO_STORAGE_SOURCES_ELASTICSEARCH_PORTS=9300
 
-    # dummy models are stored here so use HDFS in case you later want to
-    # expand the Event and PredictionServers
+        # dummy models are stored here so use HDFS in case you later want to
+        # expand the Event and PredictionServers
 	PIO_STORAGE_SOURCES_HDFS_TYPE=hdfs
-    PIO_STORAGE_SOURCES_HDFS_PATH=hdfs://some-master:9000/models
+        PIO_STORAGE_SOURCES_HDFS_PATH=hdfs://some-master:9000/models
 
 	# HBase Source config
 	PIO_STORAGE_SOURCES_HBASE_TYPE=hbase

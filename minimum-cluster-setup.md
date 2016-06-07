@@ -246,7 +246,7 @@ Read [this tutorial](http://www.tutorialspoint.com/hadoop/hadoop_multi_node_clus
 - Change the `/usr/local/elasticsearch/config/elasticsearch.yml` file as shown below. This is minimal and allows all hosts to act as backup masters in case the acting master goes down. Also all hosts are data/index nodes so can respond to queries and host shards of the index.
 
   ```
-cluster.name: your-app-name
+cluster.name: some-cluster # remember to put the same name in pio-env.sh below
 discovery.zen.ping.multicast.enabled: false # most cloud services don't allow multicast
 discovery.zen.ping.unicast.hosts: ["some-master", "some-slave-1", "some-slave-2"] # add all hosts, masters and/or data nodes
 	```
@@ -361,7 +361,7 @@ You have PredictionIO in `~/pio` so edit ~/pio/conf/pio-env.sh to have these set
 	# Safe config that will work if you expand your cluster later
 	SPARK_HOME=/usr/local/spark
 	ES_CONF_DIR=/usr/local/elasticsearch
-	HADOOP_CONF_DIR=/usr/local/hadoop/etc/handoop
+	HADOOP_CONF_DIR=/usr/local/hadoop/etc/hadoop
     HBASE_CONF_DIR=/usr/local/hbase/conf
 
 	# Filesystem paths where PredictionIO uses as block storage.

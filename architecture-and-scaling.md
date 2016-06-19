@@ -1,3 +1,9 @@
+# THESE DOCS ARE DEPRECATED SEE [ActionML.com/docs](actionml.com/docs)
+
+The Guides are moved
+
+The markdown templates are now in https://github.com/actionml/docs.actionml.com. Changes there are automatically published to the live site: actionml.com/docs. Please make any PRs to that new repos.
+
 # Architecture and Scaling
 
 For most higher load production installations you will need to separate clustered services to avoid contention for resources like cores and memory. This is the case where you will use some machines to run PredictonIO EventServers and the Universal Recommender PredictionServers. You will also likely want to create a separate Elasticsearch cluster, HBase+HDFS cluster, and a Spark cluster.

@@ -1,3 +1,9 @@
+# THESE DOCS ARE DEPRECATED SEE [ActionML.com/docs](actionml.com/docs)
+
+The Guides are moved
+
+The markdown templates are now in https://github.com/actionml/docs.actionml.com. Changes there are automatically published to the live site: actionml.com/docs. Please make any PRs to that new repos.
+
 # PredictionIO by ActionML
 
 For various reasons ActionML has forked the PredictionIO project and maintains it's own repo. Unfortunately we released v0.9.6 of the project 3 weeks before Salesforce also released the same version. We are working to resolve this split and in the near future will at least rename out releases so they won't have colliding artifact names.

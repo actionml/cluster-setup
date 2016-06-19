@@ -1,3 +1,9 @@
+# THESE DOCS ARE DEPRECATED SEE [ActionML.com/docs](actionml.com/docs)
+
+The Guides are moved
+
+The markdown templates are now in https://github.com/actionml/docs.actionml.com. Changes there are automatically published to the live site: actionml.com/docs. Please make any PRs to that new repos.
+
 #Start and Stop a PredictionIO Cluster
 
 There are several Services that together are needed to run PredictionIO and the Universal Recommender. It is important that these be started and stopped in the right order. If you used the action(ML) cluster setup guide then the instructions below will apply verbatim, if you setup you own clustered environment you may need to substitute the right paths but the order of commands will be the same.

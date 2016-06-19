@@ -1,3 +1,9 @@
+# THESE DOCS ARE DEPRECATED SEE [ActionML.com/docs](actionml.com/docs)
+
+The Guides are moved
+
+The markdown templates are now in https://github.com/actionml/docs.actionml.com. Changes there are automatically published to the live site: actionml.com/docs. Please make any PRs to that new repos.
+
 # Welcome to ActionML
 
 We help people build Machine learning into their Apps. We create, the systems, algorithms, and infrastructure to make machine intelligence practical. We help customize or invent what is needed then we maintain open source implementations of it all. Try it and if you need help [contact us](/#contact) us or ask for [community support](https://groups.google.com/forum/#!forum/actionml-user) 

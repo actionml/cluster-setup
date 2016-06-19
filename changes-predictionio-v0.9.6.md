@@ -1,3 +1,9 @@
+# THESE DOCS ARE DEPRECATED SEE [ActionML.com/docs](actionml.com/docs)
+
+The Guides are moved
+
+The markdown templates are now in https://github.com/actionml/docs.actionml.com. Changes there are automatically published to the live site: actionml.com/docs. Please make any PRs to that new repos.
+
 # ActionML's Version of PredictionIO v0.9.6
 
 ActionML maintains a forked version of PredictionIO starting with v0.9.6. The key changes from v0.9.5 are:

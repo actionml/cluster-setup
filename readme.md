@@ -1,6 +1,9 @@
-# The ActionML Documentation Has Moved
+# THESE DOCS ARE DEPRECATED SEE [ActionML.com/docs](actionml.com/docs)
 
-See the docs on the new site [actionml.com/docs](actionml.com/docs) To suggest changes create a PR against the repo [here](https://github.com/actionml/docs.actionml.com) These docs will be removed in favor of the new github repo and site so please update you bookmarks.
+The Guides are moved
+
+The markdown templates are now in https://github.com/actionml/docs.actionml.com. Changes there are automatically published to the live site: actionml.com/docs. Please make any PRs to that new repos.
+
 
 # Depredated ActionML Documentation
  

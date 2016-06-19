@@ -1,3 +1,9 @@
+# THESE DOCS ARE DEPRECATED SEE [ActionML.com/docs](actionml.com/docs)
+
+The Guides are moved
+
+The markdown templates are now in https://github.com/actionml/docs.actionml.com. Changes there are automatically published to the live site: actionml.com/docs. Please make any PRs to that new repos.
+
 #Universal Recommender Tuning
 The default settings of the UR are good for many purposes but getting optimum results may require tuning and at very least many users will wish to know the meaning of the various tuning params.
 

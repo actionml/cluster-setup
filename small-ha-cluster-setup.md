@@ -1,3 +1,9 @@
+# THESE DOCS ARE DEPRECATED SEE [ActionML.com/docs](actionml.com/docs)
+
+The Guides are moved
+
+The markdown templates are now in https://github.com/actionml/docs.actionml.com. Changes there are automatically published to the live site: actionml.com/docs. Please make any PRs to that new repos.
+
 #ActionML Small High Availability Cluster Setup Guide
 
 This is a guide to setting up PredictionIO and the Universal Recommender in a 3 node cluster with all services running on the 3 cluster machines. For setting up to use all external cluster machines see the "Distributed Cluster Setup Guide".

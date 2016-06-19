@@ -1,6 +1,8 @@
-# Guides are moved
+# DEPRECATED SEE [ActionML.com/docs](actionml.com/docs)
 
-These mardown docs in actionml/clustersetup are moved to https://github.com/actionml/docs.actionml.com. Changes there are automatically published to the live site: actionml.com/docs. Please make any PRs to that new repos.
+The Guides are moved
+
+The markdown templates are now in https://github.com/actionml/docs.actionml.com. Changes there are automatically published to the live site: actionml.com/docs. Please make any PRs to that new repos.
 
 #ActionML Minimum Cluster Setup Guide
 
